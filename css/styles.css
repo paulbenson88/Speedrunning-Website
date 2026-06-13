@@ -700,22 +700,39 @@ footer {
 .footer-social-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  background: var(--card);
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 48px;
+  padding: 0.7rem 0.95rem;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 999px;
   color: var(--text);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.footer-social-link:visited {
+  color: inherit;
+}
+
+.footer-social-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .footer-social-link:hover {
+  transform: translateY(-3px);
   border-color: var(--accent);
-  background: var(--surface);
-  color: var(--accent);
+  background: var(--card);
+}
+
+.footer-social-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ── Commentator Button (in detail panel) ────────────── */
