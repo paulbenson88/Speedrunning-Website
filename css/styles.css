@@ -683,6 +683,41 @@ footer {
   font-size: 0.8rem;
 }
 
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.footer-social-link:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+}
+
 /* ── Commentator Button (in detail panel) ────────────── */
 .commentator-btn {
   display: inline-flex;
@@ -1373,6 +1408,156 @@ footer {
   margin-top: 0.8rem;
 }
 
+/* ── Social Links ────────────────────────────────────── */
+.social-links-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  font-size: 1.4rem;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  color: var(--text);
+}
+
+.social-link:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+/* ── About Section ───────────────────────────────────── */
+.about-section {
+  background: linear-gradient(145deg, var(--card), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.15rem;
+}
+
+.about-section h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.8rem;
+}
+
+.about-section p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+}
+
+.about-subsection {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.about-subsection h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.about-subsection p {
+  margin-bottom: 0;
+}
+
+.games-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.game-tag {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.game-tag:hover {
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+/* ── Quick Links Section ─────────────────────────────── */
+.quick-links-section {
+  background: linear-gradient(145deg, var(--card), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.15rem;
+}
+
+.quick-links-section h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.8rem;
+}
+
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.8rem;
+}
+
+.quick-link-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+.link-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.link-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+
+.link-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stream-embed-wrap {
+  margin-top: 0.8rem;
+}
+
 /* ── Runs Page ───────────────────────────────────────── */
 .runs-page {
   display: flex;
@@ -1673,6 +1858,19 @@ footer {
 
   .landing-cta {
     width: 100%;
+  }
+
+  .quick-links-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-socials {
+    gap: 0.6rem;
+  }
+
+  .footer-social-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
   }
 
   .submit-grid {
