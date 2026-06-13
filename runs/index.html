@@ -577,6 +577,18 @@
       }
 
       addRecentPlaceholders();
+
+      // Re-sort all entries by date descending so static + dynamic are interleaved correctly
+      (function sortAllEntries() {
+        const entries = [...runsMain.querySelectorAll('.run-entry')];
+        entries.sort((a, b) => {
+          const dateA = new Date(a.querySelector('.run-event-date')?.textContent?.trim() || 0);
+          const dateB = new Date(b.querySelector('.run-event-date')?.textContent?.trim() || 0);
+          return dateB - dateA;
+        });
+        entries.forEach((entry) => runsMain.appendChild(entry));
+      })();
+
       setupTwitchEmbeds();
 
       if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
