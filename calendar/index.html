@@ -3,14 +3,346 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Speedrun Marathon Calendar</title>
+  <title>pbb8's Speedrun Hub | Calendar</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    :root {
+      --hub-bg: #0a0d14;
+      --hub-panel: rgba(17, 22, 35, 0.82);
+      --hub-panel-strong: rgba(24, 31, 49, 0.95);
+      --hub-line: rgba(255, 255, 255, 0.1);
+      --hub-text: #f5f7fb;
+      --hub-muted: #a5afc4;
+      --hub-cyan: #7ef2ff;
+      --hub-gold: #ffd36f;
+      --hub-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    html {
+      color-scheme: dark;
+    }
+
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(117, 169, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(255, 142, 190, 0.15), transparent 24%),
+        radial-gradient(circle at 70% 75%, rgba(126, 242, 255, 0.12), transparent 24%),
+        linear-gradient(180deg, #090c13 0%, #0d1220 100%);
+      color: var(--hub-text);
+    }
+
+    .owner-auth-controls {
+      display: none !important;
+    }
+
+    header,
+    main.calendar-page,
+    footer {
+      width: min(1240px, calc(100% - 32px));
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    header {
+      margin-top: 24px;
+      margin-bottom: 20px;
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px 18px;
+      border: 1px solid var(--hub-line);
+      border-radius: 32px;
+      background: rgba(11, 15, 24, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--hub-shadow);
+      position: relative;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      margin-right: auto;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(117, 169, 255, 0.25), rgba(255, 142, 190, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 1.15rem;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 1rem;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-copy span {
+      display: block;
+      color: var(--hub-muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .site-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .site-tab {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--hub-line);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--hub-text);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .site-tab.active {
+      background: linear-gradient(135deg, rgba(117, 169, 255, 0.22), rgba(126, 242, 255, 0.18));
+    }
+
+    .subtitle {
+      width: 100%;
+      margin: 0;
+      color: var(--hub-muted);
+      font-size: 0.92rem;
+    }
+
+    main.calendar-page {
+      max-width: 1240px;
+      padding: 0 0 48px;
+    }
+
+    .next-up,
+    .upcoming,
+    .month-nav,
+    .event-details {
+      border: 1px solid var(--hub-line);
+      border-radius: 24px;
+      background: var(--hub-panel);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--hub-shadow);
+    }
+
+    .next-up,
+    .upcoming,
+    .event-details {
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .upcoming h2,
+    .event-details h3,
+    .month-nav h2 {
+      font-family: "Fraunces", serif;
+      letter-spacing: -0.03em;
+    }
+
+    .upcoming h2 {
+      margin-bottom: 12px;
+      font-size: 2rem;
+    }
+
+    #upcoming-list li,
+    #other-runners-list li,
+    .event-details li {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      padding: 1rem 1rem;
+    }
+
+    .calendar-actions {
+      margin-top: 14px;
+    }
+
+    .subscribe-btn,
+    .export-btn,
+    .submit-link-btn,
+    .next-up-watch,
+    .next-up-cal,
+    .subscribe-action-btn,
+    .copy-url-btn,
+    .month-nav button,
+    .modal-close-btn,
+    .commentator-add-row button {
+      border: 1px solid var(--hub-line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--hub-text);
+      font: inherit;
+    }
+
+    .subscribe-btn,
+    .export-btn,
+    .submit-link-btn,
+    .next-up-watch,
+    .next-up-cal,
+    .subscribe-action-btn,
+    .copy-url-btn {
+      padding: 0.8rem 1rem;
+    }
+
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 20px;
+      padding: 16px 18px;
+      background: var(--hub-panel-strong);
+    }
+
+    .month-nav h2 {
+      min-width: 240px;
+      margin: 0;
+      font-size: 1.9rem;
+      text-align: center;
+    }
+
+    .month-nav button {
+      padding: 0.7rem 1rem;
+    }
+
+    .calendar-grid {
+      gap: 10px;
+    }
+
+    .day-header {
+      color: var(--hub-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+
+    .day-cell {
+      background: var(--hub-panel);
+      border: 1px solid var(--hub-line);
+      border-radius: 16px;
+      min-height: 110px;
+      padding: 0.7rem;
+    }
+
+    .day-cell.empty {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .day-cell.today {
+      border-color: rgba(126, 242, 255, 0.5);
+      box-shadow: 0 0 0 1px rgba(126, 242, 255, 0.18);
+    }
+
+    .day-cell .day-number {
+      color: var(--hub-muted);
+    }
+
+    .day-cell.today .day-number,
+    .event-dot,
+    .event-details .event-time,
+    #upcoming-list .event-date,
+    #upcoming-list .event-time,
+    #other-runners-list .event-date,
+    #other-runners-list .event-time,
+    .schedule-link,
+    .subscribe-option a,
+    .twitch-link {
+      color: var(--hub-cyan);
+    }
+
+    .event-label,
+    .event-details .event-desc,
+    #upcoming-list .event-desc,
+    #other-runners-list .event-desc,
+    .subscribe-intro,
+    .subscribe-option p,
+    .subscribe-option ol,
+    .subscribe-tip {
+      color: var(--hub-muted) !important;
+    }
+
+    .modal,
+    .subscribe-option {
+      background: rgba(15, 19, 30, 0.95);
+      border: 1px solid var(--hub-line);
+      color: var(--hub-text);
+    }
+
+    .subscribe-url-input,
+    .commentator-add-row input {
+      border: 1px solid var(--hub-line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--hub-text);
+      font: inherit;
+    }
+
+    footer {
+      margin-top: 12px;
+      margin-bottom: 24px;
+      padding: 0;
+      color: var(--hub-muted);
+    }
+
+    .footer-content {
+      border: 1px solid var(--hub-line);
+      border-radius: 24px;
+      background: rgba(11, 15, 24, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--hub-shadow);
+      padding: 20px;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        border-radius: 24px;
+      }
+
+      .month-nav {
+        flex-wrap: wrap;
+      }
+
+      .month-nav h2 {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .upcoming,
+      .event-details,
+      .next-up {
+        padding: 20px;
+      }
+
+      .upcoming h2 {
+        font-size: 1.65rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>🎮 pbb8's Speedrun Calendar</h1>
-    <button id="admin-toggle" class="admin-btn" title="Unlock admin mode">🔒</button>
+    <div class="brand">
+      <div class="brand-mark">🎮</div>
+      <div class="brand-copy">
+        <strong>pbb8's Speedrun Hub</strong>
+        <span>Marathon calendar</span>
+      </div>
+    </div>
     <nav class="site-tabs" aria-label="Primary navigation">
       <a href="../" class="site-tab">Home</a>
       <a href="./" class="site-tab active">Calendar</a>

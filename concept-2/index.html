@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concept Two - pbb8's Speedrun Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --paper: #fffaf3;
+      --ink: #171717;
+      --muted: #5f5a54;
+      --line: #d9cfbf;
+      --accent: #d85c2e;
+      --accent-soft: #ffe0d4;
+      --olive: #6f7f3c;
+      --olive-soft: #e6edd4;
+      --blue: #184f8c;
+      --blue-soft: #d9e8f8;
+      --shadow: 0 20px 50px rgba(77, 54, 30, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.45)),
+        repeating-linear-gradient(135deg, rgba(216,92,46,0.03) 0 28px, rgba(24,79,140,0.03) 28px 56px),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Manrope", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1220px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 48px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .intro {
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .navrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      border: 1px solid #efc5b4;
+      font-size: 1.2rem;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-family: "Archivo Expanded", sans-serif;
+      font-size: 0.98rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .brand-copy span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .navchips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .navchips a,
+    .navchips span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .navchips span {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    .headline {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .headline h1 {
+      margin: 0;
+      font-family: "Archivo Expanded", sans-serif;
+      font-size: clamp(2.6rem, 5vw, 4.8rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+    }
+
+    .headline-copy {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      padding-bottom: 8px;
+    }
+
+    .actionbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 0 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      font-weight: 800;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.7rem;
+      font-weight: 800;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .feature-stack {
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+      background: linear-gradient(180deg, #1f2937, #111827);
+      color: #f5f5f5;
+    }
+
+    .feature-stack h2 {
+      margin: 0;
+      font-family: "Archivo Expanded", sans-serif;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+    }
+
+    .feature-stack p {
+      margin: 0;
+      color: #cfd5de;
+      line-height: 1.65;
+    }
+
+    .social-block {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .social-item {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .social-item b {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .social-item span {
+      display: block;
+      color: #b8c2cf;
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
+
+    .social-badge {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      font-weight: 800;
+    }
+
+    .social-arrow {
+      color: #b8c2cf;
+      font-weight: 800;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .section-card {
+      padding: 24px;
+    }
+
+    .section-card h2 {
+      margin: 0;
+      font-family: "Archivo Expanded", sans-serif;
+      font-size: 1.55rem;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+
+    .section-card p.lead {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .event-list,
+    .game-list,
+    .notes-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .event-row,
+    .game-row,
+    .note-row {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .event-row strong,
+    .game-row strong,
+    .note-row strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .event-row span,
+    .game-row span,
+    .note-row span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.88rem;
+    }
+
+    .eyetag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .eyetag-orange {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .eyetag-olive {
+      background: var(--olive-soft);
+      color: var(--olive);
+    }
+
+    .eyetag-blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    @media (max-width: 980px) {
+      .masthead,
+      .headline,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 20px, 1220px);
+        padding-top: 14px;
+      }
+
+      .intro,
+      .feature-stack,
+      .section-card {
+        padding: 18px;
+      }
+
+      .headline h1 {
+        font-size: 2.3rem;
+      }
+
+      .social-item {
+        grid-template-columns: 42px 1fr;
+      }
+
+      .social-arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="masthead">
+      <div class="card intro">
+        <div class="navrow">
+          <div class="brand">
+            <div class="brand-mark">🎮</div>
+            <div class="brand-copy">
+              <strong>pbb8's Speedrun Hub</strong>
+              <span>Concept two: cleaner editorial / magazine style</span>
+            </div>
+          </div>
+          <div class="navchips" aria-label="Concept navigation">
+            <a href="../">Current site</a>
+            <a href="../concept/">Concept one</a>
+            <a href="../runs/">Previous Runs</a>
+            <span>Concept two</span>
+          </div>
+        </div>
+
+        <div class="headline">
+          <h1>A sharper creator hub with more editorial structure.</h1>
+          <div class="headline-copy">This direction is less sci-fi and more polished publishing layout: bright background, bold typography, stacked information cards, and stronger content hierarchy without feeling corporate.</div>
+        </div>
+
+        <div class="actionbar">
+          <a href="../runs/" class="btn btn-primary">See run archive</a>
+          <a href="../calendar/" class="btn btn-secondary">View schedule</a>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <strong>Archive-first</strong>
+            <span>Built around what the site actually does best: keeping your marathon history organized.</span>
+          </div>
+          <div class="metric">
+            <strong>Personal</strong>
+            <span>Keeps the personality and family-life tone instead of pretending this is a big studio brand.</span>
+          </div>
+          <div class="metric">
+            <strong>Readable</strong>
+            <span>High contrast and clean cards that still feel modern on desktop and mobile.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card feature-stack">
+        <h2>Where this one is different</h2>
+        <p>This concept goes for a more refined, magazine-like layout. It still feels modern, but it is warmer, more readable, and a little less “tech demo.”</p>
+
+        <div class="social-block">
+          <a class="social-item" href="https://twitch.tv/pbb8" target="_blank" rel="noopener">
+            <div class="social-badge">TV</div>
+            <div><b>Twitch</b><span>Live streams and marathon VODs</span></div>
+            <div class="social-arrow">→</div>
+          </a>
+          <a class="social-item" href="https://www.youtube.com/channel/UC88HGMfjFeXN_DbXf1tXMJQ" target="_blank" rel="noopener">
+            <div class="social-badge">YT</div>
+            <div><b>YouTube</b><span>Uploads, clips, and archived runs</span></div>
+            <div class="social-arrow">→</div>
+          </a>
+          <a class="social-item" href="https://discord.gg/5FywUCH" target="_blank" rel="noopener">
+            <div class="social-badge">DC</div>
+            <div><b>Discord</b><span>Community space and updates</span></div>
+            <div class="social-arrow">→</div>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content-grid">
+      <article class="card section-card">
+        <div class="eyetag eyetag-orange">About</div>
+        <h2>About Paul</h2>
+        <p class="lead">Instead of burying the personal side, this concept gives it a proper feature area and keeps it grounded.</p>
+        <div class="notes-list">
+          <div class="note-row">
+            <strong>Personal first</strong>
+            <span>Licensed therapist in Minnesota, husband, dad, and part-time speedrunner whenever life gives you room for it.</span>
+          </div>
+          <div class="note-row">
+            <strong>Not pretending to be a content machine</strong>
+            <span>The design supports the fact that the site is for marathon history, occasional streams, and keeping everything in one place.</span>
+          </div>
+          <div class="note-row">
+            <strong>Still creator-facing</strong>
+            <span>Social links stay prominent, but they feel integrated into the page instead of floating around it.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="eyetag eyetag-olive">History</div>
+        <h2>Marathon Runs</h2>
+        <p class="lead">This version treats the run archive more like a curated feature list than a plain data view.</p>
+        <div class="event-list">
+          <div class="event-row">
+            <strong>Speedromizer IX</strong>
+            <span>Garden Trills - Any% Normal. The latest run gets a lead spot with room for a thumbnail or VOD state.</span>
+          </div>
+          <div class="event-row">
+            <strong>Gamers Against Cancer 2026</strong>
+            <span>Ollie-Oop - All Missions. Repeat events can sit in a cleaner, more editorial archive rhythm.</span>
+          </div>
+          <div class="event-row">
+            <strong>Speedromizer history</strong>
+            <span>Older appearances stack below without making the page feel crowded or overly app-like.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="eyetag eyetag-blue">Games</div>
+        <h2>Games In Rotation</h2>
+        <p class="lead">The game links could be expanded into richer cards with clearer labels and a more intentional layout.</p>
+        <div class="game-list">
+          <div class="game-row">
+            <strong>Garden Trills</strong>
+            <span>Current lead game and newest marathon appearance. Good candidate for the top visual slot.</span>
+          </div>
+          <div class="game-row">
+            <strong>Ollie-Oop</strong>
+            <span>Strong archive game with multiple event appearances already on the site.</span>
+          </div>
+          <div class="game-row">
+            <strong>Bad Way</strong>
+            <span>Rounds out the spread and helps the page feel like a real speedrun hub instead of a single-game microsite.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="eyetag eyetag-orange">Why it works</div>
+        <h2>Modern, but calmer</h2>
+        <p class="lead">If concept one felt too flashy, this is the alternate direction.</p>
+        <div class="notes-list">
+          <div class="note-row">
+            <strong>Stronger readability</strong>
+            <span>Light backgrounds and clean content blocks make it easier to scan a lot of information.</span>
+          </div>
+          <div class="note-row">
+            <strong>Still feels designed</strong>
+            <span>Bold type, better spacing, and distinct color accents keep it from looking like a plain document.</span>
+          </div>
+          <div class="note-row">
+            <strong>Fits your actual use case</strong>
+            <span>It supports your marathon log first, with streaming and socials as secondary but still visible pieces.</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Concept preview only. This is a second design direction and does not replace your live homepage unless you want it to.</p>
+  </div>
+</body>
+</html>

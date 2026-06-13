@@ -752,31 +752,38 @@
     if (enabled) {
       document.body.classList.add("admin-mode");
       localStorage.setItem(ADMIN_STORAGE_KEY, "true");
-      adminBtn.textContent = "\uD83D\uDD13";
-      adminBtn.title = "Admin mode active \u2014 click to lock";
+      if (adminBtn) {
+        adminBtn.textContent = "\uD83D\uDD13";
+        adminBtn.title = "Admin mode active \u2014 click to lock";
+      }
     } else {
       document.body.classList.remove("admin-mode");
       localStorage.removeItem(ADMIN_STORAGE_KEY);
-      adminBtn.textContent = "\uD83D\uDD12";
-      adminBtn.title = "Unlock admin mode";
+      if (adminBtn) {
+        adminBtn.textContent = "\uD83D\uDD12";
+        adminBtn.title = "Unlock admin mode";
+      }
     }
   }
 
-  document.getElementById("admin-toggle").addEventListener("click", () => {
-    if (isAdmin()) {
-      setAdminMode(false);
-    } else {
-      if (!ensureAdminPasscode()) {
-        return;
+  const adminToggleBtn = document.getElementById("admin-toggle");
+  if (adminToggleBtn) {
+    adminToggleBtn.addEventListener("click", () => {
+      if (isAdmin()) {
+        setAdminMode(false);
+      } else {
+        if (!ensureAdminPasscode()) {
+          return;
+        }
+        const pw = prompt("Enter admin passcode:");
+        if (pw !== null && pw.trim() === getStoredAdminPasscode()) {
+          setAdminMode(true);
+        } else if (pw !== null) {
+          alert("Incorrect password.");
+        }
       }
-      const pw = prompt("Enter admin passcode:");
-      if (pw !== null && pw.trim() === getStoredAdminPasscode()) {
-        setAdminMode(true);
-      } else if (pw !== null) {
-        alert("Incorrect password.");
-      }
-    }
-  });
+    });
+  }
 
   // Restore admin state on load
   if (isAdmin()) {

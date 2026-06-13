@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Concept - pbb8's Speedrun Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0d14;
+      --panel: rgba(17, 22, 35, 0.82);
+      --panel-strong: rgba(24, 31, 49, 0.95);
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #f5f7fb;
+      --muted: #a5afc4;
+      --blue: #75a9ff;
+      --cyan: #7ef2ff;
+      --rose: #ff8ebe;
+      --gold: #ffd36f;
+      --green: #8ff3b2;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(117, 169, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(255, 142, 190, 0.15), transparent 24%),
+        radial-gradient(circle at 70% 75%, rgba(126, 242, 255, 0.12), transparent 24%),
+        linear-gradient(180deg, #090c13 0%, #0d1220 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page-shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(11, 15, 24, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(117, 169, 255, 0.25), rgba(255, 142, 190, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 1.15rem;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 1rem;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .topnav a,
+    .topnav .active {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .topnav .active {
+      background: linear-gradient(135deg, rgba(117, 169, 255, 0.22), rgba(126, 242, 255, 0.18));
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(126, 242, 255, 0.14), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(255, 142, 190, 0.16), transparent 26%),
+        var(--panel);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgba(126, 242, 255, 0.08);
+      border: 1px solid rgba(126, 242, 255, 0.18);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+    }
+
+    .hero-main h1 {
+      margin-top: 20px;
+      max-width: 11ch;
+      font-family: "Fraunces", serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy {
+      margin-top: 18px;
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 1.03rem;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      font-weight: 700;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, rgba(117, 169, 255, 0.25), rgba(126, 242, 255, 0.2));
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .stat-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .stat-card span {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 16px;
+      padding: 20px;
+      background: var(--panel-strong);
+    }
+
+    .side-status {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(143, 243, 178, 0.08);
+      color: var(--green);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .side-status h2 {
+      margin-top: 14px;
+      font-size: 1.35rem;
+    }
+
+    .side-status p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    .social-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .social-stack a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .social-stack a:hover {
+      transform: translateX(4px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .social-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+
+    .social-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 1rem;
+    }
+
+    .social-hint {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2 {
+      font-family: "Fraunces", serif;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .panel-header p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.6;
+    }
+
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline-date {
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .timeline-copy strong {
+      display: block;
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+    }
+
+    .timeline-copy span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .game-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .game-card .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(117, 169, 255, 0.1);
+      color: var(--blue);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .game-card h3 {
+      margin-top: 14px;
+      font-size: 1.15rem;
+    }
+
+    .game-card p {
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .game-card a {
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .about-card p,
+    .notes-card p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .about-card p + p,
+    .notes-card p + p {
+      margin-top: 14px;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .span-7,
+      .span-5,
+      .span-6 {
+        grid-column: auto;
+      }
+
+      .hero-stats,
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page-shell {
+        width: min(100% - 20px, 1240px);
+        padding-top: 16px;
+      }
+
+      .topbar {
+        border-radius: 24px;
+        padding: 16px;
+      }
+
+      .topnav {
+        justify-content: flex-start;
+      }
+
+      .hero-main,
+      .hero-side,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .hero-main {
+        padding: 22px;
+      }
+
+      .hero-main h1 {
+        max-width: none;
+        font-size: 2.8rem;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🎮</div>
+        <div class="brand-copy">
+          <strong>pbb8's Speedrun Hub</strong>
+          <span>Modern concept preview</span>
+        </div>
+      </div>
+      <nav class="topnav" aria-label="Concept navigation">
+        <a href="../">Current site</a>
+        <a href="../calendar/">Calendar</a>
+        <a href="../runs/">Previous Runs</a>
+        <span class="active">Concept View</span>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">Live concept for a more modern full UI</div>
+        <h1>Less “page of links,” more actual destination.</h1>
+        <p class="hero-copy">This direction treats your site like a real creator home base: clear identity up top, stronger visual atmosphere, featured stats, a better hierarchy for your marathon history, and social links that feel designed instead of tacked on.</p>
+        <div class="hero-actions">
+          <a href="../runs/" class="button button-primary">Open previous runs</a>
+          <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener" class="button button-secondary">Watch on Twitch</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <strong>3</strong>
+            <span>Current focus games linked to their speedrun.com pages.</span>
+          </div>
+          <div class="stat-card">
+            <strong>2024-26</strong>
+            <span>Recent marathon history already archived on the site.</span>
+          </div>
+          <div class="stat-card">
+            <strong>1 hub</strong>
+            <span>Calendar, VOD history, socials, and stream presence in one place.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <section class="side-status">
+          <div class="status-pill">Concept status</div>
+          <h2>Designed to feel current, not template-generated.</h2>
+          <p>This version leans into editorial spacing, stronger typography, layered panels, and a visual rhythm that feels more like a real creator brand page.</p>
+        </section>
+
+        <div class="social-stack">
+          <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">
+            <div class="social-label"><div class="social-icon">📺</div> Twitch</div>
+            <span class="social-hint">Live and VODs</span>
+          </a>
+          <a href="https://www.youtube.com/channel/UC88HGMfjFeXN_DbXf1tXMJQ" target="_blank" rel="noopener">
+            <div class="social-label"><div class="social-icon">▶</div> YouTube</div>
+            <span class="social-hint">Archives and uploads</span>
+          </a>
+          <a href="https://www.instagram.com/pbb8.tv" target="_blank" rel="noopener">
+            <div class="social-label"><div class="social-icon">◎</div> Instagram</div>
+            <span class="social-hint">Personal updates</span>
+          </a>
+          <a href="https://www.tiktok.com/@paul_benson" target="_blank" rel="noopener">
+            <div class="social-label"><div class="social-icon">♪</div> TikTok</div>
+            <span class="social-hint">Short-form clips</span>
+          </a>
+          <a href="https://discord.gg/5FywUCH" target="_blank" rel="noopener">
+            <div class="social-label"><div class="social-icon">✦</div> Discord</div>
+            <span class="social-hint">Community space</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="panel span-7">
+        <div class="panel-header">
+          <div>
+            <h2>Marathon Timeline</h2>
+            <p>A more modern version of your run history could feel more like a featured timeline than a simple list, while still linking into the existing runs page.</p>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">Jun 2026</div>
+            <div class="timeline-copy">
+              <strong>Speedromizer IX</strong>
+              <span>Garden Trills - Any% Normal. Framed as the latest featured appearance, with room for a thumbnail or VOD state.</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Mar 2026</div>
+            <div class="timeline-copy">
+              <strong>Gamers Against Cancer 2026</strong>
+              <span>Ollie-Oop - All Missions. A timeline layout makes repeat marathon appearances feel more intentional and easier to scan.</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2025-24</div>
+            <div class="timeline-copy">
+              <strong>Speedromizer history</strong>
+              <span>The older runs can stack cleanly underneath, still readable on mobile without feeling like a wall of cards.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel span-5 about-card">
+        <div class="panel-header">
+          <div>
+            <h2>About Paul</h2>
+            <p>The personal section can stay warm and honest, but be presented inside a stronger content card with better hierarchy.</p>
+          </div>
+        </div>
+        <p>Hi, I'm Paul. By day I'm a licensed therapist in Minnesota. Outside of that, this is where I keep up with speedrunning, marathon events, and the occasional stream whenever life actually gives me the time.</p>
+        <p>I’ve got a wife, two young kids, and two dogs that occasionally end up on stream too, so the site works best when it feels personal without getting messy.</p>
+      </article>
+
+      <article class="panel span-6">
+        <div class="panel-header">
+          <div>
+            <h2>Games In Rotation</h2>
+            <p>These could become more visual feature cards instead of small pills, while still linking out to speedrun.com.</p>
+          </div>
+        </div>
+        <div class="games-grid">
+          <div class="game-card">
+            <span class="tag">Current</span>
+            <h3>Garden Trills</h3>
+            <p>Latest marathon appearance and a good candidate for the lead slot in the current design.</p>
+            <a href="https://www.speedrun.com/garden_trills" target="_blank" rel="noopener">Open speedrun.com</a>
+          </div>
+          <div class="game-card">
+            <span class="tag">Archive</span>
+            <h3>Ollie-Oop</h3>
+            <p>A clean card can surface your existing marathon history without overwhelming the page.</p>
+            <a href="https://www.speedrun.com/OllieOop" target="_blank" rel="noopener">Open speedrun.com</a>
+          </div>
+          <div class="game-card">
+            <span class="tag">Archive</span>
+            <h3>Bad Way</h3>
+            <p>Useful for showing the spread of games you run without forcing users into the full runs page first.</p>
+            <a href="https://www.speedrun.com/bad_way" target="_blank" rel="noopener">Open speedrun.com</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel span-6 notes-card">
+        <div class="panel-header">
+          <div>
+            <h2>Why This Feels More Modern</h2>
+            <p>This is the design logic behind the example, not just a random restyle.</p>
+          </div>
+        </div>
+        <p>It uses stronger type contrast, fewer generic boxes, more deliberate spacing, and clearer “feature” areas so the page feels curated instead of assembled.</p>
+        <p>It also lets the page support both sides of what you actually are: a marathon run archive and a sporadic creator/streamer, without pretending it needs to look like a daily content machine.</p>
+      </article>
+    </section>
+
+    <p class="footer-note">Concept preview only. Your current live site is unchanged unless you want me to turn this direction into the real homepage.</p>
+  </div>
+</body>
+</html>
