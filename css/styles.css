@@ -103,7 +103,7 @@ header h1 {
   top: 1rem;
   right: 1rem;
   margin-top: 0;
-  display: flex;
+  display: none;
   gap: 0.5rem;
   align-items: center;
   flex-wrap: wrap;
