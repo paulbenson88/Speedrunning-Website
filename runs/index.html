@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Previous Runs - pbb8</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🎮 pbb8's Runs</h1>
+    <p class="stream-line"><a href="https://twitch.tv/pbb8" target="_blank" rel="noopener" class="stream-link">twitch.tv/pbb8</a></p>
+    <nav class="site-tabs" aria-label="Primary navigation">
+      <a href="../" class="site-tab">Home</a>
+      <a href="../calendar/" class="site-tab">Calendar</a>
+      <a href="./" class="site-tab active">Previous Runs</a>
+      <a href="../submit/" class="site-tab">Submit Updates</a>
+    </nav>
+    <div class="owner-auth-controls" id="owner-auth-controls">
+      <span id="owner-auth-status" class="owner-auth-status">Owner tools locked</span>
+      <button id="owner-signin-btn" type="button" class="owner-auth-btn">Sign in</button>
+      <button id="owner-signout-btn" type="button" class="owner-auth-btn hidden">Sign out</button>
+    </div>
+  </header>
+
+  <main class="runs-page">
+    <div class="runs-filter">
+      <label for="game-filter">Filter by game:</label>
+      <select id="game-filter"></select>
+    </div>
+
+    <section class="run-entry" data-game="Ollie-Oop" data-run-id="51011">
+      <h2 class="run-event-title">Gamers Against Cancer 2026</h2>
+      <p class="run-event-game">Ollie-Oop — All Missions</p>
+      <p class="run-event-date">March 15, 2026</p>
+      <div class="embed-wrap">
+        <iframe
+          class="twitch-embed"
+          data-video-id="2722038682"
+          data-start-time="28h15m37s"
+          title="Gamers Against Cancer 2026 Twitch VOD"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p class="embed-fallback">If Twitch does not load here, <a href="https://www.twitch.tv/videos/2722038682?t=28h15m37s" target="_blank" rel="noopener">open this VOD on Twitch</a>.</p>
+    </section>
+
+    <section class="run-entry" data-game="Ollie-Oop">
+      <h2 class="run-event-title">Speedromizer VIII</h2>
+      <p class="run-event-game">Ollie-Oop — All Missions</p>
+      <p class="run-event-date">December 13, 2025</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/_gsMWvE6SoM"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+
+    <section class="run-entry" data-game="Legacy of Kain: Soul Reaver 2">
+      <h2 class="run-event-title">Speedromizer VII</h2>
+      <p class="run-event-game">Legacy of Kain: Soul Reaver 2 — Any% Unrestricted</p>
+      <p class="run-event-date">June 21, 2025</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/n1hN4s5a-H0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+
+    <section class="run-entry" data-game="Bad Way">
+      <h2 class="run-event-title">Speedromizer VI</h2>
+      <p class="run-event-game">Bad Way — Any%</p>
+      <p class="run-event-date">November 23, 2024</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/eHsA_vrLj2g"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Speedrun Marathon Calendar</p>
+  </footer>
+
+  <script src="js/events.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/owner-auth.js"></script>
+  <script>
+    (async function () {
+      const runsMain = document.querySelector('.runs-page');
+      const select = document.getElementById('game-filter');
+      const twitchEmbeds = document.querySelectorAll('.twitch-embed');
+      const ownerStatusEl = document.getElementById('owner-auth-status');
+      const ownerSignInBtn = document.getElementById('owner-signin-btn');
+      const ownerSignOutBtn = document.getElementById('owner-signout-btn');
+      const VOD_OVERRIDES_KEY = 'runsPageVodOverridesV1';
+      const originalMediaByKey = new Map();
+      let firebaseDb = null;
+      let ownerState = { isOwner: false, user: null, ownerConfigured: false, authReady: false };
+
+      function setOwnerUiState(nextState) {
+        ownerState = nextState || ownerState;
+
+        if (ownerStatusEl) {
+          if (ownerState.isOwner) {
+            ownerStatusEl.textContent = `Owner tools unlocked: ${ownerState.user?.email || ownerState.user?.uid || 'signed in'}`;
+          } else if (ownerState.user) {
+            ownerStatusEl.textContent = 'Signed in, but this account is not owner-approved';
+          } else {
+            ownerStatusEl.textContent = 'Owner tools locked';
+          }
+        }
+
+        if (ownerSignInBtn) {
+          ownerSignInBtn.classList.toggle('hidden', Boolean(ownerState.user));
+        }
+        if (ownerSignOutBtn) {
+          ownerSignOutBtn.classList.toggle('hidden', !ownerState.user);
+        }
+      }
+
+      function formatRunDate(date) {
+        return date.toLocaleDateString(undefined, {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+
+      function createPlaceholderEntry(ev, run) {
+        const section = document.createElement('section');
+        section.className = 'run-entry run-placeholder';
+        section.dataset.game = run.game;
+        section.dataset.runId = String(run.runId);
+
+        section.innerHTML = `
+          <h2 class="run-event-title">${ev.name}</h2>
+          <p class="run-event-game">${run.game} — ${run.category}</p>
+          <p class="run-event-date">${formatRunDate(new Date(run.date))}</p>
+          <p class="embed-fallback">VOD placeholder: upload pending for this run.</p>
+        `;
+
+        return section;
+      }
+
+      function getEntryKey(entry) {
+        if (entry.dataset.runId) {
+          return `runId:${entry.dataset.runId}`;
+        }
+
+        const title = entry.querySelector('.run-event-title')?.textContent?.trim() || '';
+        const game = entry.querySelector('.run-event-game')?.textContent?.trim() || '';
+        const date = entry.querySelector('.run-event-date')?.textContent?.trim() || '';
+        return `text:${title}|${game}|${date}`;
+      }
+
+      function getStoredOverrides() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(VOD_OVERRIDES_KEY) || '{}');
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (_) {
+          return {};
+        }
+      }
+
+      function saveStoredOverrides(overrides) {
+        localStorage.setItem(VOD_OVERRIDES_KEY, JSON.stringify(overrides));
+      }
+
+      function getFirebaseDb() {
+        if (firebaseDb) {
+          return firebaseDb;
+        }
+
+        try {
+          if (!window.firebase) {
+            return null;
+          }
+
+          const cfg = window.FIREBASE_CONFIG || {};
+          if (!cfg.apiKey || !cfg.projectId || !cfg.appId) {
+            return null;
+          }
+
+          const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(cfg);
+          firebaseDb = app.firestore();
+          return firebaseDb;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      async function loadFirebaseOverrides() {
+        const db = getFirebaseDb();
+        if (!db) {
+          return {};
+        }
+
+        try {
+          const snap = await db.collection('runSubmissions').get();
+          const out = {};
+          const newestByKey = {};
+          snap.forEach((doc) => {
+            const data = doc.data() || {};
+            if (String(data.submissionType || '') !== 'vod-override') {
+              return;
+            }
+            const entryKey = String(data.entryKey || '').trim();
+            if (!entryKey) {
+              return;
+            }
+
+            const updatedAtIso = String(data.updatedAtIso || data.submittedAtIso || '');
+            const rank = updatedAtIso ? Date.parse(updatedAtIso) : 0;
+            const prev = newestByKey[entryKey];
+            if (!prev || rank >= prev.rank) {
+              newestByKey[entryKey] = {
+                rank,
+                disabled: data.disabled === true,
+                sourceUrl: String(data.sourceUrl || '').trim()
+              };
+            }
+          });
+
+          Object.keys(newestByKey).forEach((entryKey) => {
+            const rec = newestByKey[entryKey];
+            if (rec.disabled) {
+              return;
+            }
+            if (rec.sourceUrl) {
+              out[entryKey] = { sourceUrl: rec.sourceUrl };
+            }
+          });
+
+          return out;
+        } catch (_) {
+          return {};
+        }
+      }
+
+      async function saveFirebaseOverride(entryKey, sourceUrl) {
+        const db = getFirebaseDb();
+        if (!db) {
+          throw new Error('Firebase not configured');
+        }
+
+        await db.collection('runSubmissions').add({
+          submissionType: 'vod-override',
+          status: 'new',
+          entryKey,
+          sourceUrl,
+          source: 'runs-page',
+          disabled: false,
+          submittedAtIso: new Date().toISOString(),
+          updatedAtIso: new Date().toISOString()
+        });
+      }
+
+      async function deleteFirebaseOverride(entryKey) {
+        const db = getFirebaseDb();
+        if (!db) {
+          throw new Error('Firebase not configured');
+        }
+
+        await db.collection('runSubmissions').add({
+          submissionType: 'vod-override',
+          entryKey,
+          sourceUrl: '',
+          disabled: true,
+          source: 'runs-page',
+          submittedAtIso: new Date().toISOString(),
+          updatedAtIso: new Date().toISOString()
+        });
+      }
+
+      function parseVodUrl(rawUrl) {
+        let parsed;
+        try {
+          parsed = new URL(rawUrl);
+        } catch (_) {
+          return null;
+        }
+
+        const host = parsed.hostname.toLowerCase();
+
+        if (host.includes('youtube.com') || host.includes('youtu.be')) {
+          let videoId = '';
+          if (host.includes('youtu.be')) {
+            videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+          } else if (parsed.pathname.startsWith('/shorts/')) {
+            videoId = parsed.pathname.split('/').filter(Boolean)[1] || '';
+          } else {
+            videoId = parsed.searchParams.get('v') || '';
+          }
+
+          if (!videoId) {
+            return null;
+          }
+
+          return {
+            kind: 'youtube',
+            embedSrc: `https://www.youtube-nocookie.com/embed/${videoId}`,
+            sourceUrl: rawUrl
+          };
+        }
+
+        if (host.includes('twitch.tv') && parsed.pathname.includes('/videos/')) {
+          const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+          if (!videoId) {
+            return null;
+          }
+
+          const pageHost = window.location.hostname || 'localhost';
+          const params = new URLSearchParams();
+          params.set('video', videoId);
+          params.set('autoplay', 'false');
+          const time = parsed.searchParams.get('t') || '0s';
+          params.set('time', time);
+          params.append('parent', pageHost);
+
+          if (pageHost === 'localhost') {
+            params.append('parent', '127.0.0.1');
+          }
+          if (pageHost === '127.0.0.1') {
+            params.append('parent', 'localhost');
+          }
+
+          return {
+            kind: 'twitch',
+            embedSrc: `https://player.twitch.tv/?${params.toString()}`,
+            sourceUrl: rawUrl
+          };
+        }
+
+        return null;
+      }
+
+      function captureOriginalMedia(entry) {
+        const key = getEntryKey(entry);
+        if (originalMediaByKey.has(key)) {
+          return;
+        }
+
+        originalMediaByKey.set(key, {
+          embedHTML: entry.querySelector('.embed-wrap')?.outerHTML || '',
+          fallbackHTML: entry.querySelector('.embed-fallback')?.outerHTML || ''
+        });
+      }
+
+      function removeCurrentMedia(entry) {
+        const currentEmbed = entry.querySelector('.embed-wrap');
+        const currentFallback = entry.querySelector('.embed-fallback');
+        if (currentEmbed) currentEmbed.remove();
+        if (currentFallback) currentFallback.remove();
+      }
+
+      function renderOriginalMedia(entry) {
+        const key = getEntryKey(entry);
+        const original = originalMediaByKey.get(key);
+        if (!original) {
+          return;
+        }
+
+        removeCurrentMedia(entry);
+
+        const dateNode = entry.querySelector('.run-event-date');
+        if (!dateNode) {
+          return;
+        }
+
+        if (original.embedHTML) {
+          dateNode.insertAdjacentHTML('afterend', original.embedHTML);
+        }
+        if (original.fallbackHTML) {
+          const embedNode = entry.querySelector('.embed-wrap');
+          if (embedNode) {
+            embedNode.insertAdjacentHTML('afterend', original.fallbackHTML);
+          } else {
+            dateNode.insertAdjacentHTML('afterend', original.fallbackHTML);
+          }
+        }
+      }
+
+      function renderCustomVod(entry, vodData) {
+        removeCurrentMedia(entry);
+
+        const dateNode = entry.querySelector('.run-event-date');
+        if (!dateNode) {
+          return;
+        }
+
+        if (vodData.kind !== 'link') {
+          const wrap = document.createElement('div');
+          wrap.className = 'embed-wrap';
+
+          const frame = document.createElement('iframe');
+          frame.src = vodData.embedSrc;
+          frame.allowFullscreen = true;
+          frame.referrerPolicy = 'origin-when-cross-origin';
+          frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+          wrap.appendChild(frame);
+          dateNode.insertAdjacentElement('afterend', wrap);
+        }
+
+      }
+
+      async function addVodActions(canEditVods) {
+        const localOverrides = getStoredOverrides();
+        const firebaseOverrides = await loadFirebaseOverrides();
+        const overrides = { ...localOverrides, ...firebaseOverrides };
+        saveStoredOverrides(overrides);
+
+        [...document.querySelectorAll('.run-entry')].forEach((entry) => {
+          captureOriginalMedia(entry);
+
+          const key = getEntryKey(entry);
+          const saved = overrides[key];
+          if (saved && typeof saved.sourceUrl === 'string' && saved.sourceUrl.trim()) {
+            const parsed = parseVodUrl(saved.sourceUrl.trim());
+            if (parsed) {
+              renderCustomVod(entry, parsed);
+            }
+          }
+
+          const existingActions = entry.querySelector('.vod-actions');
+          if (!canEditVods) {
+            if (existingActions) {
+              existingActions.remove();
+            }
+            return;
+          }
+
+          if (existingActions) {
+            return;
+          }
+
+          const actions = document.createElement('div');
+          actions.className = 'vod-actions';
+
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'vod-edit-btn';
+          button.textContent = 'Add/Edit VOD';
+
+          button.addEventListener('click', () => {
+            if (!ownerState.isOwner) {
+              window.alert('Only the owner account can edit VODs.');
+              return;
+            }
+
+            const currentOverrides = getStoredOverrides();
+            const entryKey = getEntryKey(entry);
+            const currentValue = currentOverrides[entryKey]?.sourceUrl || '';
+
+            const submittedUrl = window.prompt(
+              'Paste a VOD URL (YouTube or Twitch). Leave blank to restore the original card.',
+              currentValue
+            );
+
+            if (submittedUrl === null) {
+              return;
+            }
+
+            const trimmed = submittedUrl.trim();
+            if (!trimmed) {
+              deleteFirebaseOverride(entryKey)
+                .then(() => {
+                  delete currentOverrides[entryKey];
+                  saveStoredOverrides(currentOverrides);
+                  renderOriginalMedia(entry);
+                  setupTwitchEmbeds();
+                })
+                .catch((err) => {
+                  window.alert(`Could not sync removal to Firebase. ${err && err.message ? err.message : ''}`.trim());
+                });
+              return;
+            }
+
+            const parsed = parseVodUrl(trimmed);
+            if (!parsed) {
+              window.alert('That URL format is not supported. Please use a full YouTube or Twitch VOD URL.');
+              return;
+            }
+
+            saveFirebaseOverride(entryKey, trimmed)
+              .then(() => {
+                currentOverrides[entryKey] = { sourceUrl: trimmed };
+                saveStoredOverrides(currentOverrides);
+                renderCustomVod(entry, parsed);
+              })
+              .catch((err) => {
+                window.alert(`Could not sync this VOD to Firebase. ${err && err.message ? err.message : ''}`.trim());
+              });
+          });
+
+          actions.appendChild(button);
+          entry.appendChild(actions);
+        });
+      }
+
+      function addRecentPlaceholders() {
+        const events = (typeof MARATHON_EVENTS !== 'undefined' && Array.isArray(MARATHON_EVENTS))
+          ? MARATHON_EVENTS
+          : (Array.isArray(globalThis.MARATHON_EVENTS) ? globalThis.MARATHON_EVENTS : null);
+        if (!events) return;
+        const firstRunEntry = runsMain.querySelector('.run-entry');
+
+        const existingIds = new Set(
+          [...document.querySelectorAll('.run-entry[data-run-id]')]
+            .map((entry) => entry.dataset.runId)
+            .filter(Boolean)
+        );
+
+        const now = new Date();
+        const placeholders = [];
+
+        for (const ev of events) {
+          for (const run of ev.runs || []) {
+            const runId = String(run.runId);
+            const runDate = new Date(run.date);
+
+            if (existingIds.has(runId)) continue;
+            // Show placeholders for any past run still missing a VOD entry.
+            if (runDate > now) continue;
+
+            placeholders.push({ ev, run, runDate });
+          }
+        }
+
+        placeholders
+          .sort((a, b) => b.runDate - a.runDate)
+          .forEach(({ ev, run }) => {
+            runsMain.insertBefore(createPlaceholderEntry(ev, run), firstRunEntry);
+          });
+      }
+
+      function setupTwitchEmbeds() {
+        const host = window.location.hostname || 'localhost';
+
+        twitchEmbeds.forEach((iframe) => {
+          const videoId = iframe.dataset.videoId;
+          const startTime = iframe.dataset.startTime || '0s';
+
+          const params = new URLSearchParams();
+          params.set('video', videoId);
+          params.set('time', startTime);
+          params.set('autoplay', 'false');
+          params.append('parent', host);
+
+          if (host === 'localhost') {
+            params.append('parent', '127.0.0.1');
+          }
+          if (host === '127.0.0.1') {
+            params.append('parent', 'localhost');
+          }
+
+          iframe.src = `https://player.twitch.tv/?${params.toString()}`;
+        });
+      }
+
+      addRecentPlaceholders();
+      setupTwitchEmbeds();
+
+      if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
+        ownerSignInBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signInWithGoogle();
+          } catch (err) {
+            window.alert(`Sign in failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (ownerSignOutBtn && window.SpeedrunOwnerAuth) {
+        ownerSignOutBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signOut();
+          } catch (err) {
+            window.alert(`Sign out failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (window.SpeedrunOwnerAuth) {
+        window.SpeedrunOwnerAuth.onChange(async (state) => {
+          setOwnerUiState(state);
+          await addVodActions(Boolean(state && state.isOwner));
+        });
+        await window.SpeedrunOwnerAuth.ready;
+      } else {
+        setOwnerUiState(ownerState);
+        await addVodActions(false);
+      }
+
+      const getEntries = () => [...document.querySelectorAll('.run-entry')];
+
+      // Build unique game list
+      const games = [...new Set(getEntries().map(e => e.dataset.game))].sort();
+      const allOpt = document.createElement('option');
+      allOpt.value = '';
+      allOpt.textContent = 'All Games';
+      select.appendChild(allOpt);
+      games.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        select.appendChild(opt);
+      });
+
+      function applyFilter(game) {
+        getEntries().forEach(entry => {
+          entry.style.display = (!game || entry.dataset.game === game) ? '' : 'none';
+        });
+      }
+
+      // Read from URL on load
+      const params = new URLSearchParams(window.location.search);
+      const initial = params.get('game') || '';
+      if (initial) select.value = initial;
+      applyFilter(initial);
+
+      // Update URL on change
+      select.addEventListener('change', () => {
+        const val = select.value;
+        const url = new URL(window.location);
+        if (val) {
+          url.searchParams.set('game', val);
+        } else {
+          url.searchParams.delete('game');
+        }
+        history.replaceState(null, '', url);
+        applyFilter(val);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speedrun Marathon Calendar</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🎮 pbb8's Speedrun Calendar</h1>
+    <button id="admin-toggle" class="admin-btn" title="Unlock admin mode">🔒</button>
+    <p class="stream-line"><a href="https://twitch.tv/pbb8" target="_blank" rel="noopener" class="stream-link">twitch.tv/pbb8</a></p>
+    <nav class="site-tabs" aria-label="Primary navigation">
+      <a href="../" class="site-tab">Home</a>
+      <a href="./" class="site-tab active">Calendar</a>
+      <a href="../runs/" class="site-tab">Previous Runs</a>
+      <a href="../submit/" class="site-tab">Submit Updates</a>
+    </nav>
+    <div class="owner-auth-controls with-admin" id="owner-auth-controls">
+      <span id="owner-auth-status" class="owner-auth-status">Owner tools locked</span>
+      <button id="owner-signin-btn" type="button" class="owner-auth-btn">Sign in</button>
+      <button id="owner-signout-btn" type="button" class="owner-auth-btn hidden">Sign out</button>
+    </div>
+    <p class="subtitle">All times shown in your local timezone&nbsp;(<span id="tz-label"></span>)</p>
+  </header>
+
+  <main class="calendar-page">
+    <section id="next-up" class="next-up hidden"></section>
+
+    <section class="upcoming">
+      <h2>Upcoming Marathons</h2>
+      <ul id="upcoming-list"></ul>
+      <div class="calendar-actions">
+        <button id="subscribe-btn" class="subscribe-btn">🔔 Subscribe: My Runs</button>
+        <button id="export-ics" class="export-btn">📅 Export All Runs (.ics)</button>
+      </div>
+    </section>
+
+    <section class="upcoming">
+      <h2>Other Runners (Games I Run)</h2>
+      <ul id="other-runners-list">
+        <li>No other-runner submissions yet.</li>
+      </ul>
+      <div class="calendar-actions">
+        <button id="subscribe-others-btn" class="subscribe-btn">🔔 Subscribe: Other Runners</button>
+      </div>
+    </section>
+
+    <div class="month-nav">
+      <button id="prev-month" aria-label="Previous month">&larr;</button>
+      <h2 id="month-title"></h2>
+      <button id="next-month" aria-label="Next month">&rarr;</button>
+    </div>
+
+    <div class="calendar-grid" id="calendar-grid">
+      <div class="day-header">Sun</div>
+      <div class="day-header">Mon</div>
+      <div class="day-header">Tue</div>
+      <div class="day-header">Wed</div>
+      <div class="day-header">Thu</div>
+      <div class="day-header">Fri</div>
+      <div class="day-header">Sat</div>
+      <!-- day cells injected by JS -->
+    </div>
+
+    <section id="event-details" class="event-details hidden">
+      <h3 id="detail-date"></h3>
+      <ul id="detail-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Speedrun Marathon Calendar</p>
+  </footer>
+
+  <!-- Subscribe Modal -->
+  <div id="subscribe-modal" class="modal-overlay hidden">
+    <div class="modal subscribe-modal">
+      <div class="modal-header">
+        <h3 id="subscribe-title">Subscribe to all current and future runs</h3>
+        <button id="subscribe-close" class="modal-close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="subscribe-intro" class="subscribe-intro">Subscribe to get pbb8's runs in your calendar app. It stays synced automatically when new runs are added!</p>
+
+        <div class="subscribe-option">
+          <h4>📱 iPhone / iPad / Mac</h4>
+          <p>Tap the button below — it will open your Calendar app and ask you to subscribe.</p>
+          <a id="webcal-link" class="subscribe-action-btn" href="#">🔗 Subscribe with Apple Calendar</a>
+        </div>
+
+        <div class="subscribe-option">
+          <h4>📅 Google Calendar</h4>
+          <ol>
+            <li>Open <a href="https://calendar.google.com/calendar/r/settings/addbyurl" target="_blank" rel="noopener">Google Calendar &rarr; Add by URL</a></li>
+            <li>Paste this URL:</li>
+          </ol>
+          <div class="subscribe-url-row">
+            <input type="text" id="gcal-url" class="subscribe-url-input" readonly />
+            <button class="copy-url-btn" data-target="gcal-url">📋 Copy</button>
+          </div>
+        </div>
+
+        <div class="subscribe-option">
+          <h4>📧 Outlook</h4>
+          <ol>
+            <li>Open Outlook &rarr; Calendar &rarr; Add calendar &rarr; <strong>Subscribe from web</strong></li>
+            <li>Paste this URL:</li>
+          </ol>
+          <div class="subscribe-url-row">
+            <input type="text" id="outlook-url" class="subscribe-url-input" readonly />
+            <button class="copy-url-btn" data-target="outlook-url">📋 Copy</button>
+          </div>
+        </div>
+
+        <div class="subscribe-option">
+          <h4>📲 Android / Other</h4>
+          <p>Most calendar apps support "Add calendar by URL". Copy the link below and paste it in your app's subscribe/add settings.</p>
+          <div class="subscribe-url-row">
+            <input type="text" id="other-url" class="subscribe-url-input" readonly />
+            <button class="copy-url-btn" data-target="other-url">📋 Copy</button>
+          </div>
+          <p class="subscribe-tip">💡 Tip: On Android, open this link in your phone's browser to auto-detect your calendar app.</p>
+        </div>
+
+        <div class="subscribe-option">
+          <h4>⬇️ One-time download</h4>
+          <p>Just want to import the runs once without subscribing?</p>
+          <a id="download-ics-link" class="subscribe-action-btn" href="calendar.ics" download="pbb8-speedruns.ics">📅 Download .ics file</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commentator Modal -->
+  <div id="commentator-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-event-title">Commentators</h3>
+        <button id="modal-close" class="modal-close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="commentator-add-row">
+          <input type="text" id="commentator-name-input" placeholder="Commentator name" autocomplete="off" />
+          <button id="commentator-add-btn">+ Add</button>
+        </div>
+        <ul id="commentator-list" class="commentator-list"></ul>
+        <p id="commentator-empty" class="commentator-empty">No commentators added yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/events.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/owner-auth.js"></script>
+  <script>
+    (function () {
+      const ownerStatusEl = document.getElementById('owner-auth-status');
+      const ownerSignInBtn = document.getElementById('owner-signin-btn');
+      const ownerSignOutBtn = document.getElementById('owner-signout-btn');
+
+      function applyOwnerState(state) {
+        if (ownerStatusEl) {
+          if (state && state.isOwner) {
+            ownerStatusEl.textContent = `Owner tools unlocked: ${state.user?.email || state.user?.uid || 'signed in'}`;
+          } else if (state && state.user) {
+            ownerStatusEl.textContent = 'Signed in';
+          } else {
+            ownerStatusEl.textContent = 'Owner tools locked';
+          }
+        }
+
+        if (ownerSignInBtn) ownerSignInBtn.classList.toggle('hidden', Boolean(state && state.user));
+        if (ownerSignOutBtn) ownerSignOutBtn.classList.toggle('hidden', !(state && state.user));
+      }
+
+      if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
+        ownerSignInBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signInWithGoogle();
+          } catch (err) {
+            window.alert(`Sign in failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (ownerSignOutBtn && window.SpeedrunOwnerAuth) {
+        ownerSignOutBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signOut();
+          } catch (err) {
+            window.alert(`Sign out failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (window.SpeedrunOwnerAuth) {
+        window.SpeedrunOwnerAuth.onChange((state) => applyOwnerState(state));
+      }
+    })();
+  </script>
+  <script src="js/commentators.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/firebase-calendar.js"></script>
+</body>
+</html>
