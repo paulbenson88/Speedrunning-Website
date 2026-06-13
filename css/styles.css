@@ -1581,7 +1581,9 @@ footer {
 }
 
 .game-tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.4rem 0.8rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1589,12 +1591,22 @@ footer {
   font-size: 0.88rem;
   color: var(--text);
   font-weight: 500;
+  text-decoration: none;
   transition: border-color 0.2s, background 0.2s;
+}
+
+.game-tag:visited {
+  color: var(--text);
 }
 
 .game-tag:hover {
   border-color: var(--accent);
   background: var(--card);
+}
+
+.game-tag:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ── Quick Links Section ─────────────────────────────── */
