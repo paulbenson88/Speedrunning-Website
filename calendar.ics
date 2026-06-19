@@ -68,20 +68,24 @@ URL:https://twitch.tv/Channel734
 LOCATION:https://twitch.tv/Channel734
 END:VEVENT
 BEGIN:VEVENT
-UID:run-prevent-a-thon-7-bad-way@speedruncalendar
+UID:submission-Prevent-A-Thon-7-Bad-Way-Any-No-Torch-Zip-pbb8-2026-05-02T04-21-00.000Z@speedruncalendar
 DTSTAMP:20260502T042100Z
 DTSTART:20260502T042100Z
-DTEND:20260502T045600Z
+DTEND:20260502T044600Z
 SUMMARY:Bad Way - Prevent-A-Thon 7
-DESCRIPTION:Prevent-A-Thon 7
+DESCRIPTION:Category: Any% (No Torch Zip)\\nRunner: pbb8\\nWatch at: https://www.twitch.tv/preventathon\\nSchedule: https://preventathon.com/schedule
+URL:https://www.twitch.tv/preventathon
+LOCATION:https://www.twitch.tv/preventathon
 END:VEVENT
 BEGIN:VEVENT
-UID:run-mint-a-thon-bad-way@speedruncalendar
+UID:submission-sub-1776133650182-qf4ldn0@speedruncalendar
 DTSTAMP:20260517T161600Z
 DTSTART:20260517T161600Z
-DTEND:20260517T165100Z
+DTEND:20260517T164600Z
 SUMMARY:Bad Way - Mint-A-Thon
-DESCRIPTION:Mint-A-Thon
+DESCRIPTION:Category: (Any% - No Torch Zip)\\nRunner: pbb8\\nWatch at: https://www.twitch.tv/mintathonlive\\nSchedule: https://mortismint.github.io/subpages/Mintathon/index.html
+URL:https://www.twitch.tv/mintathonlive
+LOCATION:https://www.twitch.tv/mintathonlive
 END:VEVENT
 BEGIN:VEVENT
 UID:run-gdq-hotfix-express-lane-ollie-oop-tentative@speedruncalendar
