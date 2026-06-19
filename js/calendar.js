@@ -829,8 +829,8 @@
 
     nextUpEl.innerHTML = `
       <span class="next-up-label">Next Up</span>
-      <span class="next-up-game">${nextRun.game}</span>
       <span class="next-up-marathon">${nextEv.name}</span>
+      <span class="next-up-game">${nextRun.game}</span>
       <span class="next-up-time">${fmtShortDate(runDate)} ${fmtTime(runDate)}</span>
       <span class="next-up-countdown">in ${countdown}</span>
       <div class="next-up-actions">

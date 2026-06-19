@@ -89,10 +89,10 @@ LOCATION:https://www.twitch.tv/mintathonlive
 END:VEVENT
 BEGIN:VEVENT
 UID:run-gdq-hotfix-express-lane-ollie-oop-tentative@speedruncalendar
-DTSTAMP:20260624T030000Z
-DTSTART:20260624T030000Z
-DTEND:20260624T033500Z
-SUMMARY:Ollie-Oop - GDQ Hotfix: Express Lane (Tentative)
+DTSTAMP:20260715T020000Z
+DTSTART:20260715T020000Z
+DTEND:20260715T023500Z
+SUMMARY:Ollie-Oop - GDQ Hotfix: Express Lane
 DESCRIPTION:Watch at: https://twitch.tv/gamesdonequick
 URL:https://twitch.tv/gamesdonequick
 LOCATION:https://twitch.tv/gamesdonequick

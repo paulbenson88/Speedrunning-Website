@@ -132,18 +132,18 @@ const MARATHON_EVENTS = [
     ],
   },
   {
-    name: "GDQ Hotfix: Express Lane (Tentative)",
-    start: "2026-06-24T03:00:00Z",
-    end: "2026-06-24T04:00:00Z",
+    name: "GDQ Hotfix: Express Lane",
+    start: "2026-07-15T02:00:00Z",
+    end: "2026-07-15T03:00:00Z",
     twitch: "gamesdonequick",
     url: "https://gdq.gg/schedule/hotfix",
     runs: [
       {
         game: "Ollie-Oop",
-        category: "Express Lane (around 9:00 PM CST, time TBD)",
+        category: "Express Lane (9:00 PM CST start tentative)",
         console: "PC",
         estimate: "PT35M",
-        date: "2026-06-24T03:00:00Z",
+        date: "2026-07-15T02:00:00Z",
         runId: "gdq-hotfix-express-lane-ollie-oop-tentative",
         runner: "pbb8",
       },
