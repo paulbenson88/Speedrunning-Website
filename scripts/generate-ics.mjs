@@ -225,6 +225,14 @@ function dedupeFeedEvents(events) {
   return Array.from(byUid.values()).sort((a, b) => a.start - b.start);
 }
 
+function keepUpcomingByEnd(events, now = new Date()) {
+  const nowMs = now.getTime();
+  return events.filter((ev) => {
+    const endMs = ev?.end instanceof Date ? ev.end.getTime() : NaN;
+    return Number.isFinite(endMs) && endMs >= nowMs;
+  });
+}
+
 function buildCalendarText({ calendarName, description, events }) {
   const lines = [
     "BEGIN:VCALENDAR",
@@ -271,8 +279,10 @@ async function main() {
     ...feedSubmitted.filter((s) => s.runnerType !== "other-runner")
   ]);
 
-  const otherRuns = dedupeFeedEvents(
-    feedSubmitted.filter((s) => s.runnerType === "other-runner")
+  const otherRuns = keepUpcomingByEnd(
+    dedupeFeedEvents(
+      feedSubmitted.filter((s) => s.runnerType === "other-runner")
+    )
   );
 
   const myIcs = buildCalendarText({

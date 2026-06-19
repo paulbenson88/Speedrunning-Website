@@ -68,23 +68,49 @@ URL:https://twitch.tv/Channel734
 LOCATION:https://twitch.tv/Channel734
 END:VEVENT
 BEGIN:VEVENT
-UID:submission-Prevent-A-Thon-7-Bad-Way-Any-No-Torch-Zip-pbb8-2026-05-02T04-21-00.000Z@speedruncalendar
+UID:run-prevent-a-thon-7-bad-way@speedruncalendar
 DTSTAMP:20260502T042100Z
 DTSTART:20260502T042100Z
-DTEND:20260502T044600Z
+DTEND:20260502T045600Z
 SUMMARY:Bad Way - Prevent-A-Thon 7
-DESCRIPTION:Category: Any% (No Torch Zip)\\nRunner: pbb8\\nWatch at: https://www.twitch.tv/preventathon\\nSchedule: https://preventathon.com/schedule
-URL:https://www.twitch.tv/preventathon
-LOCATION:https://www.twitch.tv/preventathon
+DESCRIPTION:Prevent-A-Thon 7
 END:VEVENT
 BEGIN:VEVENT
-UID:submission-sub-1776133650182-qf4ldn0@speedruncalendar
+UID:run-mint-a-thon-bad-way@speedruncalendar
 DTSTAMP:20260517T161600Z
 DTSTART:20260517T161600Z
-DTEND:20260517T164600Z
+DTEND:20260517T165100Z
 SUMMARY:Bad Way - Mint-A-Thon
-DESCRIPTION:Category: (Any% - No Torch Zip)\\nRunner: pbb8\\nWatch at: https://www.twitch.tv/mintathonlive\\nSchedule: https://mortismint.github.io/subpages/Mintathon/index.html
-URL:https://www.twitch.tv/mintathonlive
-LOCATION:https://www.twitch.tv/mintathonlive
+DESCRIPTION:Mint-A-Thon
+END:VEVENT
+BEGIN:VEVENT
+UID:run-gdq-hotfix-express-lane-ollie-oop-tentative@speedruncalendar
+DTSTAMP:20260624T030000Z
+DTSTART:20260624T030000Z
+DTEND:20260624T033500Z
+SUMMARY:Ollie-Oop - GDQ Hotfix: Express Lane (Tentative)
+DESCRIPTION:Watch at: https://twitch.tv/gamesdonequick
+URL:https://twitch.tv/gamesdonequick
+LOCATION:https://twitch.tv/gamesdonequick
+END:VEVENT
+BEGIN:VEVENT
+UID:run-istiptop26-bad-way@speedruncalendar
+DTSTAMP:20260718T194000Z
+DTSTART:20260718T194000Z
+DTEND:20260718T201000Z
+SUMMARY:Bad Way - InstaTipTopathon 2026
+DESCRIPTION:Watch at: https://twitch.tv/InstaSpeedathon
+URL:https://twitch.tv/InstaSpeedathon
+LOCATION:https://twitch.tv/InstaSpeedathon
+END:VEVENT
+BEGIN:VEVENT
+UID:run-istiptop26-garden-trills@speedruncalendar
+DTSTAMP:20260718T202500Z
+DTSTART:20260718T202500Z
+DTEND:20260718T205000Z
+SUMMARY:Garden Trills - InstaTipTopathon 2026
+DESCRIPTION:Watch at: https://twitch.tv/InstaSpeedathon
+URL:https://twitch.tv/InstaSpeedathon
+LOCATION:https://twitch.tv/InstaSpeedathon
 END:VEVENT
 END:VCALENDAR

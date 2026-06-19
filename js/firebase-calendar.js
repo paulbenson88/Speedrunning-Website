@@ -435,14 +435,22 @@
     const list = document.getElementById("other-runners-list");
     if (!list) return;
 
-    if (!submissions.length) {
+    const now = new Date();
+    const upcoming = submissions.filter((s) => {
+      const start = new Date(s.runDateIso);
+      if (Number.isNaN(start.getTime())) return false;
+      const end = new Date(start.getTime() + durationMs(s.estimateIso));
+      return end >= now;
+    });
+
+    if (!upcoming.length) {
       list.innerHTML = "<li>No other-runner submissions yet.</li>";
       return;
     }
 
     list.innerHTML = "";
 
-    submissions
+    upcoming
       .sort((a, b) => new Date(a.runDateIso) - new Date(b.runDateIso))
       .slice(0, 20)
       .forEach((s) => {

@@ -7,34 +7,4 @@ X-WR-CALNAME:pbb8 Games - Other Runners
 X-WR-CALDESC:Other runners for games pbb8 runs
 REFRESH-INTERVAL;VALUE=DURATION:PT15M
 X-PUBLISHED-TTL:PT15M
-BEGIN:VEVENT
-UID:submission-GDQ-Hotfix-Bad-Way-Any-No-Torch-Zip-Streetbackguy-2026-04-17T23-00-00.000Z@speedruncalendar
-DTSTAMP:20260417T230000Z
-DTSTART:20260417T230000Z
-DTEND:20260417T232500Z
-SUMMARY:Bad Way - GDQ Hotfix
-DESCRIPTION:Category: Any% (No Torch Zip)\\nRunner: Streetbackguy\\nWatch at: https://www.twitch.tv/gamesdonequick
-URL:https://www.twitch.tv/gamesdonequick
-LOCATION:https://www.twitch.tv/gamesdonequick
-END:VEVENT
-BEGIN:VEVENT
-UID:submission-sub-1775703155000-9zzwpwv@speedruncalendar
-DTSTAMP:20260426T102500Z
-DTSTART:20260426T102500Z
-DTEND:20260426T105500Z
-SUMMARY:Bad Way - NSG Spring 2026
-DESCRIPTION:Category: Any% (No Torch Zip)\\nRunner: SweedOla\\nWatch at: https://twitch.tv/nsgmarathon\\nSchedule: https://oengus.io/marathon/NSGSpr26/schedule/nsgspr26
-URL:https://twitch.tv/nsgmarathon
-LOCATION:https://twitch.tv/nsgmarathon
-END:VEVENT
-BEGIN:VEVENT
-UID:submission-sub-1775703280193-w7sq6dw@speedruncalendar
-DTSTAMP:20260529T120000Z
-DTSTART:20260529T120000Z
-DTEND:20260529T122500Z
-SUMMARY:Garden Trills - UKSG GREEN 2026
-DESCRIPTION:Category: Any%\\nRunner: firethieff\\nWatch at: https://twitch.tv/uksgmarathon\\nSchedule: https://oengus.io/marathon/uksggrn26/schedule
-URL:https://twitch.tv/uksgmarathon
-LOCATION:https://twitch.tv/uksgmarathon
-END:VEVENT
 END:VCALENDAR
