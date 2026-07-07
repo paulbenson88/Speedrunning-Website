@@ -37,10 +37,23 @@
       font-family: "Space Grotesk", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 15% 20%, rgba(117, 169, 255, 0.18), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(255, 142, 190, 0.15), transparent 24%),
-        radial-gradient(circle at 70% 75%, rgba(126, 242, 255, 0.12), transparent 24%),
-        linear-gradient(180deg, #090c13 0%, #0d1220 100%);
+        linear-gradient(180deg, rgba(6, 10, 18, 0.58) 0%, rgba(10, 14, 24, 0.78) 100%),
+        linear-gradient(180deg, #21afe6 0%, #2eb8e8 42%, #7ad4ec 63%, #f2f3f6 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.16), transparent 20%),
+        radial-gradient(circle at 82% 18%, rgba(11, 20, 39, 0.34), transparent 26%),
+        linear-gradient(180deg, rgba(9, 12, 19, 0.16), rgba(9, 12, 19, 0.44));
+      opacity: 0.9;
     }
 
     a {
@@ -57,6 +70,57 @@
       width: min(1240px, calc(100% - 32px));
       margin: 0 auto;
       padding: 24px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-shell > header,
+    .page-shell > main,
+    .page-shell > footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    .edge-emotes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    .edge-emote {
+      position: fixed;
+      width: var(--size, 72px);
+      height: var(--size, 72px);
+      object-fit: contain;
+      opacity: 0.24;
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+      touch-action: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .edge-emote.e1  { top: 54px; left: 201px; --size: 76px; }
+    .edge-emote.e2  { top: 62px; left: 1634px; --size: 74px; }
+    .edge-emote.e3  { top: 215px; left: 62px; --size: 82px; }
+    .edge-emote.e4  { top: 203px; left: 1764px; --size: 80px; }
+    .edge-emote.e5  { top: 367px; left: 208px; --size: 68px; }
+    .edge-emote.e6  { top: 354px; left: 1635px; --size: 66px; }
+    .edge-emote.e7  { top: 502px; left: 63px; --size: 64px; }
+    .edge-emote.e8  { top: 486px; left: 1775px; --size: 70px; }
+    .edge-emote.e9  { top: 630px; left: 190px; --size: 92px; }
+    .edge-emote.e10 { top: 666px; left: 1638px; --size: 88px; }
+    .edge-emote.e11 { top: 803px; left: 1769px; --size: 78px; opacity: 0.2; }
+    .edge-emote.e12 { top: 811px; left: 57px; --size: 78px; }
+    .edge-emote.e14 { top: 954px; left: 210px; --size: 72px; }
+    .edge-emote.e15 { top: 961px; left: 1641px; --size: 74px; }
+
+    @media (max-width: 1320px) {
+      .edge-emotes {
+        display: none;
+      }
+
     }
 
     .topbar {
@@ -113,6 +177,10 @@
 
     .topnav a,
     .topnav .active {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
       padding: 10px 14px;
       border-radius: 999px;
       border: 1px solid var(--line);
@@ -135,7 +203,9 @@
 
     .hero-left {
       display: grid;
+      grid-template-rows: auto auto;
       gap: 20px;
+      min-height: 100%;
     }
 
     .hero-main,
@@ -151,13 +221,48 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      padding: 30px 32px;
+      padding: 30px 32px 8px;
       position: relative;
       overflow: hidden;
       background:
         radial-gradient(circle at top right, rgba(126, 242, 255, 0.14), transparent 24%),
         radial-gradient(circle at bottom left, rgba(255, 142, 190, 0.16), transparent 26%),
         var(--panel);
+    }
+
+    .hero-main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero-copy-block {
+      min-width: 0;
+    }
+
+    .hero-avatar-card {
+      align-self: stretch;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: 0;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(180deg, rgba(34, 174, 230, 0.38), rgba(242, 243, 246, 0.2)),
+        rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+    }
+
+    .hero-avatar-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 22px;
+      box-shadow: 0 18px 36px rgba(3, 8, 18, 0.26);
     }
 
     .eyebrow {
@@ -183,27 +288,20 @@
     }
 
     .hero-main h1 {
-      margin-top: 14px;
-      max-width: 12ch;
+      margin-top: 0;
+      max-width: 14ch;
       font-family: "Fraunces", serif;
-      font-size: clamp(2.35rem, 3.9vw, 3.4rem);
+      font-size: clamp(1.8rem, 2.8vw, 2.45rem);
       line-height: 1.02;
       letter-spacing: -0.04em;
     }
 
     .hero-copy {
-      margin-top: 14px;
+      margin-top: 10px;
       max-width: 38rem;
       color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.72;
-    }
-
-    .hero-actions {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+      font-size: 0.96rem;
+      line-height: 1.64;
     }
 
     .button {
@@ -249,6 +347,14 @@
       box-shadow: var(--shadow);
     }
 
+    .side-status,
+    .stream-card,
+    .social-card,
+    .hero-left .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
     .status-pill {
       display: inline-flex;
       align-items: center;
@@ -272,11 +378,28 @@
       box-shadow: 0 0 12px currentColor;
     }
 
-    .side-status h2,
+    .status-pill.status-live {
+      background: rgba(143, 243, 178, 0.08);
+      color: var(--green);
+    }
+
+    .status-pill.status-offline {
+      background: rgba(255, 109, 109, 0.08);
+      color: #ff6d6d;
+    }
+
     .stream-card h2,
     .social-card h2 {
       margin-top: 14px;
       font-size: 1.35rem;
+    }
+
+    .stream-card h2.status-live {
+      color: var(--green);
+    }
+
+    .stream-card h2.status-offline {
+      color: #ff8080;
     }
 
     .stream-card h2 a {
@@ -323,6 +446,7 @@
       gap: 10px;
       justify-items: center;
       margin-top: 16px;
+      align-content: start;
     }
 
     .social-stack a {
@@ -399,43 +523,100 @@
       line-height: 1.6;
     }
 
+    .card-copy p + p {
+      margin-top: 14px;
+    }
+
     .span-7 { grid-column: span 7; }
     .span-12 { grid-column: span 12; }
 
     .timeline {
+      margin-top: 6px;
+      min-height: 0;
+    }
+
+    .timeline-scroll {
+      max-height: 520px;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 8px;
       display: grid;
-      gap: 14px;
+      gap: 10px;
+    }
+
+    .timeline-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .timeline-scroll::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+    }
+
+    .timeline-scroll::-webkit-scrollbar-thumb {
+      background: rgba(117, 169, 255, 0.45);
+      border-radius: 999px;
     }
 
     .timeline-item {
       display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 16px;
-      padding: 16px;
-      border-radius: 18px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
       background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .timeline-date {
-      color: var(--gold);
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .timeline-copy strong {
       display: block;
-      font-size: 1.08rem;
-      margin-bottom: 6px;
+      font-size: 0.98rem;
+      margin-bottom: 4px;
     }
 
     .timeline-copy span {
       display: block;
       color: var(--muted);
-      line-height: 1.6;
-      font-size: 0.92rem;
+      line-height: 1.45;
+      font-size: 0.84rem;
+    }
+
+    .timeline-date {
+      display: block;
+      margin-top: 6px;
+      color: var(--gold);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .timeline-watch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(126, 242, 255, 0.35);
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .timeline-watch:hover {
+      border-color: var(--cyan);
+      background: rgba(126, 242, 255, 0.12);
+    }
+
+    .timeline-watch.pending {
+      border-color: rgba(255, 255, 255, 0.12);
+      color: var(--muted);
+      cursor: default;
+      pointer-events: none;
     }
 
     .games-grid {
@@ -486,6 +667,48 @@
       font-size: 0.84rem;
     }
 
+    .emote-showcase {
+      width: min(100%, 980px);
+      margin: 0 auto 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.8rem;
+    }
+
+    .emote-showcase-title {
+      margin: 0 0 0.55rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .emote-showcase-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.55rem;
+    }
+
+    .emote-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .emote-chip img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
     @media (max-width: 980px) {
       .hero,
       .grid {
@@ -531,9 +754,31 @@
         font-size: 2.2rem;
       }
 
+      .hero-main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-avatar-card {
+        max-width: 240px;
+      }
+
       .timeline-item {
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 8px;
+      }
+
+      .timeline-watch {
+        justify-self: start;
+      }
+
+      .emote-chip {
+        width: 42px;
+        height: 42px;
+      }
+
+      .emote-chip img {
+        width: 34px;
+        height: 34px;
       }
     }
   </style>
@@ -546,6 +791,23 @@
   </div>
 
   <div class="page-shell">
+    <div class="edge-emotes" aria-hidden="true">
+      <img class="edge-emote e1" src="assets/emotes/pbb8love112.png" alt="" />
+      <img class="edge-emote e2" src="assets/emotes/pbb8Paulina112.png" alt="" />
+      <img class="edge-emote e3" src="assets/emotes/pbb8Hype112.png" alt="" />
+      <img class="edge-emote e4" src="assets/emotes/pbb8Gasm112.png" alt="" />
+      <img class="edge-emote e5" src="assets/emotes/pbb8treat112.png" alt="" />
+      <img class="edge-emote e6" src="assets/emotes/ketchup112.png" alt="" />
+      <img class="edge-emote e7" src="assets/emotes/kappa112.png" alt="" />
+      <img class="edge-emote e8" src="assets/emotes/poggers.png" alt="" />
+      <img class="edge-emote e9" src="assets/emotes/PBB8Sadie112.png" alt="" />
+      <img class="edge-emote e10" src="assets/emotes/IvyEmote112.png" alt="" />
+      <img class="edge-emote e11" src="assets/emotes/pbb8smile112.png" alt="" />
+      <img class="edge-emote e12" src="assets/emotes/Thinking.png" alt="" />
+      <img class="edge-emote e14" src="assets/emotes/pbb8Shirt.png" alt="" />
+      <img class="edge-emote e15" src="assets/emotes/pbb8Rage.png" alt="" />
+    </div>
+
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark">🎮</div>
@@ -565,63 +827,96 @@
       <section class="hero">
         <div class="hero-left">
           <div class="hero-main">
-            <div class="eyebrow">Paul&apos;s speedruns, marathon history, and stream updates</div>
-            <h1>Hey, I&apos;m Paul. This is my little corner of speedrunning.</h1>
-            <p class="hero-copy">I built this site mostly to keep track of the marathon runs I&apos;ve done over time, what I have coming up next, and where all the VODs and stream links live. Speedrunning is something I fit in around work, family life, and everything else, so having one place for it all has been really nice.</p>
-            <div class="hero-actions">
-              <a href="runs/" class="button button-primary">Open previous runs</a>
-              <a href="calendar/" class="button button-secondary">View the schedule</a>
+            <div class="hero-main-layout">
+              <div class="hero-copy-block">
+                <h1>Hey, I&apos;m Paul. This is my little corner of speedrunning.</h1>
+                <p class="hero-copy">I made this site to keep my marathon runs, schedule, and VOD links in one place. :)</p>
+              </div>
+              <div class="hero-avatar-card">
+                <img src="assets/illustrations/paul-avatar.png" alt="Illustrated portrait of Paul" />
+              </div>
             </div>
           </div>
 
           <article class="panel">
             <div class="panel-header">
               <div>
-                <h2>Marathon Timeline</h2>
-                <p>A few of the marathon runs I&apos;ve done recently, with the full history living on the runs page.</p>
+                <h2>Marathon History Timeline</h2>
+                <p>Past marathons I&apos;ve been part of.</p>
               </div>
             </div>
             <div class="timeline">
-              <div class="timeline-item">
-                <div class="timeline-date">Jun 2026</div>
-                <div class="timeline-copy">
-                  <strong>Speedromizer IX</strong>
-                  <span>Garden Trills - Any% Normal. My latest marathon run and the newest thing added to the archive.</span>
+              <div class="timeline-scroll" id="timeline-scroll" aria-label="Marathon run history list">
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Speedromizer IX</strong>
+                    <span>Garden Trills - Any% Normal</span>
+                    <span class="timeline-date">June 12, 2026</span>
+                  </div>
+                  <a class="timeline-watch" href="https://youtu.be/pxTFYA4hQ0M?si=VyQkc7H9DK0BJp3j" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-date">Mar 2026</div>
-                <div class="timeline-copy">
-                  <strong>Gamers Against Cancer 2026</strong>
-                  <span>Ollie-Oop - All Missions. Another run I got to bring to a recent event.</span>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Mint-A-Thon</strong>
+                    <span>Bad Way - (Any% - No Torch Zip)</span>
+                    <span class="timeline-date">May 17, 2026</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.youtube.com/watch?v=-q0gUjHfKu8" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-date">2025-24</div>
-                <div class="timeline-copy">
-                  <strong>Speedromizer history</strong>
-                  <span>Older appearances from past events, all kept together in the full archive.</span>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Prevent-A-Thon 7</strong>
+                    <span>Bad Way - Any% (No Torch Zip)</span>
+                    <span class="timeline-date">May 1, 2026</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.twitch.tv/videos/2766643531?t=11h47m01s" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-date">Dec 2025</div>
-                <div class="timeline-copy">
-                  <strong>Speedromizer VIII</strong>
-                  <span>Ollie-Oop - All Missions. A full run now archived with VOD coverage.</span>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>No Fish 2026</strong>
+                    <span>Ollie-Oop - All Missions</span>
+                    <span class="timeline-date">April 12, 2026</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.youtube.com/watch?v=IXeoRU__9OU" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-date">Jun 2025</div>
-                <div class="timeline-copy">
-                  <strong>Speedromizer VII</strong>
-                  <span>Legacy of Kain: Soul Reaver 2 - Any% Unrestricted.</span>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Gamers Against Cancer 2026</strong>
+                    <span>Ollie-Oop - All Missions</span>
+                    <span class="timeline-date">March 15, 2026</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.twitch.tv/videos/2722038682?t=28h15m37s" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-date">Nov 2024</div>
-                <div class="timeline-copy">
-                  <strong>Speedromizer VI</strong>
-                  <span>Bad Way - Any%. One of the earlier archived marathon appearances on the site.</span>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Speedromizer VIII</strong>
+                    <span>Ollie-Oop - All Missions</span>
+                    <span class="timeline-date">December 13, 2025</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.youtube.com/watch?v=_gsMWvE6SoM" target="_blank" rel="noopener">Watch VOD</a>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Speedromizer VII</strong>
+                    <span>Legacy of Kain: Soul Reaver 2 - Any% Unrestricted</span>
+                    <span class="timeline-date">June 21, 2025</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.youtube.com/watch?v=n1hN4s5a-H0" target="_blank" rel="noopener">Watch VOD</a>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-copy">
+                    <strong>Speedromizer VI</strong>
+                    <span>Bad Way - Any%</span>
+                    <span class="timeline-date">November 23, 2024</span>
+                  </div>
+                  <a class="timeline-watch" href="https://www.youtube.com/watch?v=eHsA_vrLj2g" target="_blank" rel="noopener">Watch VOD</a>
                 </div>
               </div>
             </div>
@@ -630,18 +925,21 @@
 
         <aside class="hero-side">
           <section class="side-status">
-            <div class="status-pill">About Me</div>
-            <h2>Speedrunning around real life.</h2>
-            <p>By day I&apos;m a licensed therapist in Minnesota. Outside of that, I&apos;m a husband, a dad, and someone who squeezes in speedruns, marathons, and the occasional stream whenever life gives me the chance.</p>
-            <p>Outside of work, I spend time with my wife Savana, our two boys, and our dogs Ivy and Fynn, and whenever I can, I like to put some of that leftover energy into speedrunning.</p>
-            <p>I&apos;m pretty open, so if you ever have a question about me, the stream, or a run, feel free to ask. This site is really just my way of keeping the speedrunning side of life organized without losing the personal side of it.</p>
+            <div class="panel-header">
+              <div class="card-copy">
+                <h2>About Me</h2>
+                <p>I&apos;m a licensed therapist in Minnesota, plus husband and dad.</p>
+                <p>When I&apos;m not working or with family, I put time into speedrunning, marathons, and occasional streams.</p>
+                <p>If you ever have a question about me, the stream, or a run, just ask.</p>
+              </div>
+            </div>
           </section>
 
           <section class="stream-card">
-            <div class="status-pill">Stream status</div>
-            <h2>Live stream: <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">twitch.tv/pbb8</a></h2>
+            <div class="status-pill status-offline" id="stream-status-pill">Stream status</div>
+            <h2 class="status-offline" id="stream-status-heading">Live stream: <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">twitch.tv/pbb8</a></h2>
             <div id="stream-offline">
-              <p>Currently offline. Follow on Twitch and you will get notified the next time the channel goes live.</p>
+              <p>I&apos;m offline right now. Follow on Twitch to get notified when I go live.</p>
               <a class="button button-primary" href="https://twitch.tv/pbb8" target="_blank" rel="noopener">Follow on Twitch</a>
             </div>
             <div class="stream-embed-wrap hidden" id="stream-live-wrap">
@@ -650,7 +948,12 @@
           </section>
 
           <section class="social-card">
-            <div class="status-pill">Socials</div>
+            <div class="panel-header">
+              <div>
+                <h2>Socials</h2>
+                <p>Places to find stream updates, VODs, and other stuff.</p>
+              </div>
+            </div>
             <div class="social-stack">
               <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">
                 <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 3h16v11l-4 4h-4l-3 3v-3H4z" fill="currentColor"></path><path d="M10 8h2v5h-2zm4 0h2v5h-2z" fill="#0d1220"></path></svg></div> Twitch</div>
@@ -677,7 +980,7 @@
           <div class="panel-header">
             <div>
               <h2>Games In Rotation</h2>
-              <p>These are the games I&apos;ve spent the most time with lately and the ones most likely to show up in a run or marathon submission.</p>
+              <p>These are the games I&apos;m running most right now and the ones you&apos;ll usually see in marathons.</p>
             </div>
           </div>
           <div class="games-grid">
@@ -703,12 +1006,29 @@
     </main>
 
     <footer>
+      <section class="emote-showcase" aria-label="Channel emotes">
+        <p class="emote-showcase-title">Channel emotes</p>
+        <div class="emote-showcase-row">
+          <span class="emote-chip"><img src="assets/emotes/pbb8smile112.png" alt="pbb8 Smile emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/pbb8love112.png" alt="pbb8 Love emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/pbb8Paulina112.png" alt="pbb8 Paulina emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/pbb8Hype112.png" alt="pbb8 Hype emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/pbb8Gasm112.png" alt="pbb8 Gasm emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/pbb8treat112.png" alt="pbb8 Treat emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/ketchup112.png" alt="Ketchup emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/kappa112.png" alt="Kappa emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/poggers.png" alt="Poggers emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/PBB8Sadie112.png" alt="Sadie emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="assets/emotes/IvyEmote112.png" alt="Ivy emote" loading="lazy" decoding="async" /></span>
+        </div>
+      </section>
       <p>&copy; 2026 pbb8's Speedrun Hub.</p>
     </footer>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/events.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/owner-auth.js"></script>
   <script>
@@ -719,6 +1039,209 @@
       const ownerStatusEl = document.getElementById('owner-auth-status');
       const ownerSignInBtn = document.getElementById('owner-signin-btn');
       const ownerSignOutBtn = document.getElementById('owner-signout-btn');
+      const timelineScroll = document.getElementById('timeline-scroll');
+      const streamStatusPill = document.getElementById('stream-status-pill');
+      const streamStatusHeading = document.getElementById('stream-status-heading');
+      const RUNS_VOD_OVERRIDES_KEY = 'runsPageVodOverridesV1';
+
+      function getTimelineEntryKey(entry) {
+        if (entry.dataset.runId) {
+          return `runId:${entry.dataset.runId}`;
+        }
+
+        const title = entry.querySelector('.run-event-title')?.textContent?.trim() || '';
+        const game = entry.querySelector('.run-event-game')?.textContent?.trim() || '';
+        const date = entry.querySelector('.run-event-date')?.textContent?.trim() || '';
+        return `text:${title}|${game}|${date}`;
+      }
+
+      function getStoredRunVodOverrides() {
+        try {
+          const parsed = JSON.parse(window.localStorage.getItem(RUNS_VOD_OVERRIDES_KEY) || '{}');
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (_err) {
+          return {};
+        }
+      }
+
+      function convertEmbedToSourceUrl(entry) {
+        const fallbackLink = entry.querySelector('.embed-fallback a[href]');
+        if (fallbackLink) {
+          return fallbackLink.href;
+        }
+
+        const iframe = entry.querySelector('.embed-wrap iframe:not(.twitch-embed)');
+        if (iframe && iframe.src.includes('youtube-nocookie.com/embed/')) {
+          const match = iframe.src.match(/embed\/([^?]+)/);
+          if (match && match[1]) {
+            return `https://www.youtube.com/watch?v=${match[1]}`;
+          }
+        }
+
+        const twitch = entry.querySelector('.twitch-embed');
+        if (twitch?.dataset.videoId) {
+          const start = twitch.dataset.startTime ? `?t=${twitch.dataset.startTime}` : '';
+          return `https://www.twitch.tv/videos/${twitch.dataset.videoId}${start}`;
+        }
+
+        return '';
+      }
+
+      function buildTimelineItem(item) {
+        const wrap = document.createElement('div');
+        wrap.className = 'timeline-item';
+
+        const copy = document.createElement('div');
+        copy.className = 'timeline-copy';
+        copy.innerHTML = `
+          <strong>${item.title}</strong>
+          <span>${item.game}</span>
+          <span class="timeline-date">${item.date}</span>
+        `;
+        wrap.appendChild(copy);
+
+        if (item.url) {
+          const link = document.createElement('a');
+          link.className = 'timeline-watch';
+          link.href = item.url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'Watch VOD';
+          wrap.appendChild(link);
+        } else {
+          const badge = document.createElement('span');
+          badge.className = 'timeline-watch pending';
+          badge.textContent = 'VOD pending';
+          wrap.appendChild(badge);
+        }
+
+        return wrap;
+      }
+
+      function formatEventDate(date) {
+        return date.toLocaleDateString(undefined, {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+
+      async function syncTimelineFromPreviousRuns() {
+        if (!timelineScroll) {
+          return;
+        }
+
+        try {
+          const response = await fetch('runs/index.html', { cache: 'no-store' });
+          if (!response.ok) {
+            return;
+          }
+
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const overrides = getStoredRunVodOverrides();
+          const entries = [...doc.querySelectorAll('.run-entry')];
+          if (!entries.length) {
+            return;
+          }
+
+          const items = entries.map((entry) => {
+            const key = getTimelineEntryKey(entry);
+            const overrideUrl = overrides[key] && typeof overrides[key].sourceUrl === 'string'
+              ? overrides[key].sourceUrl.trim()
+              : '';
+            const dateText = entry.querySelector('.run-event-date')?.textContent?.trim() || '';
+
+            return {
+              key,
+              title: entry.querySelector('.run-event-title')?.textContent?.trim() || 'Unknown event',
+              game: entry.querySelector('.run-event-game')?.textContent?.trim() || '',
+              date: dateText,
+              parsedDate: Date.parse(dateText) || 0,
+              url: overrideUrl || convertEmbedToSourceUrl(entry)
+            };
+          });
+
+          const existingRunIds = new Set(
+            entries
+              .map((entry) => entry.dataset.runId)
+              .filter(Boolean)
+              .map((id) => String(id))
+          );
+
+          const events = (typeof MARATHON_EVENTS !== 'undefined' && Array.isArray(MARATHON_EVENTS))
+            ? MARATHON_EVENTS
+            : (Array.isArray(globalThis.MARATHON_EVENTS) ? globalThis.MARATHON_EVENTS : []);
+          const now = Date.now();
+
+          events.forEach((event) => {
+            (event.runs || []).forEach((run) => {
+              const runId = String(run.runId);
+              const runTime = Date.parse(run.date);
+              if (!runId || existingRunIds.has(runId) || !runTime || runTime > now) {
+                return;
+              }
+
+              items.push({
+                key: `runId:${runId}`,
+                title: event.name,
+                game: `${run.game} — ${run.category}`,
+                date: formatEventDate(new Date(run.date)),
+                parsedDate: runTime,
+                url: ''
+              });
+            });
+          });
+
+          items.sort((a, b) => b.parsedDate - a.parsedDate);
+
+          timelineScroll.innerHTML = '';
+          items.forEach((item) => timelineScroll.appendChild(buildTimelineItem(item)));
+          syncTimelineHeightToSocialCard();
+        } catch (_err) {
+          // Keep the current hardcoded fallback if the runs page cannot be loaded.
+        }
+      }
+
+      function syncTimelineHeightToSocialCard() {
+        if (!timelineScroll || window.innerWidth <= 980) {
+          if (timelineScroll) {
+            timelineScroll.style.height = '';
+          }
+          return;
+        }
+
+        const socialCard = document.querySelector('.social-card');
+        const timelinePanel = document.querySelector('.hero-left .panel');
+        const panelHeader = timelinePanel?.querySelector('.panel-header');
+        const timelineWrap = timelinePanel?.querySelector('.timeline');
+
+        if (!socialCard || !timelinePanel || !panelHeader || !timelineWrap) {
+          return;
+        }
+
+        const socialHeight = socialCard.getBoundingClientRect().height;
+        const panelStyles = getComputedStyle(timelinePanel);
+        const timelineStyles = getComputedStyle(timelineWrap);
+        const available = socialHeight
+          - parseFloat(panelStyles.paddingTop)
+          - parseFloat(panelStyles.paddingBottom)
+          - panelHeader.getBoundingClientRect().height
+          - parseFloat(timelineStyles.marginTop || '0');
+
+        timelineScroll.style.height = `${Math.max(260, Math.floor(available))}px`;
+      }
+
+      function setStreamStatusAppearance(isLive) {
+        if (streamStatusPill) {
+          streamStatusPill.classList.toggle('status-live', isLive);
+          streamStatusPill.classList.toggle('status-offline', !isLive);
+        }
+        if (streamStatusHeading) {
+          streamStatusHeading.classList.toggle('status-live', isLive);
+          streamStatusHeading.classList.toggle('status-offline', !isLive);
+        }
+      }
 
       function applyOwnerState(state) {
         if (ownerStatusEl) {
@@ -758,12 +1281,17 @@
         window.SpeedrunOwnerAuth.onChange((state) => applyOwnerState(state));
       }
 
+      syncTimelineFromPreviousRuns();
+      window.addEventListener('resize', syncTimelineHeightToSocialCard);
+
       function showOffline() {
+        setStreamStatusAppearance(false);
         liveWrap.classList.add('hidden');
         offlineWrap.classList.remove('hidden');
       }
 
       function showLive() {
+        setStreamStatusAppearance(true);
         offlineWrap.classList.add('hidden');
         liveWrap.classList.remove('hidden');
       }

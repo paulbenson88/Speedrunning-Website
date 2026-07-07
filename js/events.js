@@ -176,4 +176,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Speedy Adventures 2026",
+    start: "2026-07-25T13:00:00Z",
+    end: "2026-07-26T02:47:00Z",
+    twitch: "speedyadventures",
+    url: "https://horaro.net/speedadv26/schedule",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-07-25T17:37:00Z",
+        runId: "speedadv26-garden-trills",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];

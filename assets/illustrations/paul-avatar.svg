@@ -1,0 +1,55 @@
+<svg width="768" height="768" viewBox="0 0 768 768" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="384" y1="0" x2="384" y2="768" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22AEE6"/>
+      <stop offset="0.58" stop-color="#6CCCE9"/>
+      <stop offset="1" stop-color="#F2F3F6"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="179" y1="575" x2="585" y2="728" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C9D2EE"/>
+      <stop offset="1" stop-color="#8D98C3"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="301" y1="147" x2="562" y2="532" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6D2BF"/>
+      <stop offset="1" stop-color="#E1A483"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="258" y1="68" x2="558" y2="366" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3D2B1E"/>
+      <stop offset="1" stop-color="#1A1512"/>
+    </linearGradient>
+    <linearGradient id="beard" x1="317" y1="389" x2="562" y2="585" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6C4D35"/>
+      <stop offset="1" stop-color="#4B3525"/>
+    </linearGradient>
+    <filter id="shadow" x="180" y="50" width="438" height="650" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0B1220" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="768" height="768" rx="42" fill="url(#bg)"/>
+  <rect y="468" width="768" height="300" fill="rgba(255,255,255,0.18)"/>
+  <g filter="url(#shadow)">
+    <path d="M228 690C286 624 323 586 386 585C469 583 560 641 610 724H149C171 715 195 706 228 690Z" fill="url(#shirt)" stroke="#62729F" stroke-width="6"/>
+    <path d="M337 506C346 541 368 558 399 560C434 562 466 546 475 511L486 546C455 575 357 585 322 545L337 506Z" fill="#E1A483"/>
+    <path d="M293 218C315 143 392 108 462 125C530 142 581 208 581 290C581 372 542 478 477 520C449 538 422 548 392 547C363 545 337 533 312 514C250 468 220 390 226 310C229 275 242 246 293 218Z" fill="url(#skin)"/>
+    <path d="M264 243C253 193 281 124 365 86C432 57 532 78 581 147C601 176 613 212 611 247C594 227 563 207 525 199C490 191 469 194 422 210C389 222 364 222 331 222C304 222 284 229 264 243Z" fill="url(#hair)"/>
+    <path d="M250 242C263 250 272 274 275 296C278 325 274 355 280 377C256 360 240 327 240 291C240 272 243 255 250 242Z" fill="#3A312B"/>
+    <path d="M520 383C537 396 542 419 537 438C528 473 505 509 476 530C456 545 433 553 410 554C380 554 350 544 326 526C296 504 274 468 266 425C263 407 261 391 264 377C284 420 316 450 340 466C359 479 379 487 404 487C427 487 454 476 474 455C492 437 507 415 520 383Z" fill="url(#beard)"/>
+    <path d="M372 355C383 346 401 342 422 345C438 347 454 354 465 366C440 371 423 376 405 376C392 376 381 373 372 355Z" fill="#6C4D35"/>
+    <path d="M440 449C425 459 410 464 393 464C376 464 359 459 343 449C358 434 376 430 394 430C412 430 428 436 440 449Z" fill="#FFF"/>
+    <path d="M343 451C357 459 375 463 394 463C411 463 427 459 440 451" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+    <path d="M364 298C380 288 404 286 420 295" stroke="#2D2118" stroke-width="9" stroke-linecap="round"/>
+    <path d="M469 299C483 288 508 286 523 296" stroke="#2D2118" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="390" cy="319" rx="22" ry="15" fill="#F8FFEE"/>
+    <ellipse cx="492" cy="320" rx="22" ry="15" fill="#F8FFEE"/>
+    <circle cx="395" cy="320" r="9" fill="#5E6E45"/>
+    <circle cx="497" cy="321" r="9" fill="#5E6E45"/>
+    <circle cx="399" cy="317" r="3" fill="#0B1220"/>
+    <circle cx="501" cy="318" r="3" fill="#0B1220"/>
+    <circle cx="403" cy="314" r="2" fill="#FFF"/>
+    <circle cx="505" cy="315" r="2" fill="#FFF"/>
+    <path d="M431 349C438 365 438 381 426 394" stroke="#B97A58" stroke-width="5" stroke-linecap="round"/>
+    <path d="M359 392C379 401 408 403 429 397" stroke="#C98663" stroke-width="5" stroke-linecap="round"/>
+    <path d="M310 574C373 534 428 531 506 570" stroke="#6F7FAB" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+    <path d="M286 607C348 566 412 565 476 603" stroke="#6F7FAB" stroke-width="5" stroke-linecap="round" opacity="0.38"/>
+  </g>
+</svg>

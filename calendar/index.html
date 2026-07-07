@@ -29,11 +29,23 @@
     body {
       font-family: "Space Grotesk", sans-serif;
       background:
-        radial-gradient(circle at 15% 20%, rgba(117, 169, 255, 0.18), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(255, 142, 190, 0.15), transparent 24%),
-        radial-gradient(circle at 70% 75%, rgba(126, 242, 255, 0.12), transparent 24%),
-        linear-gradient(180deg, #090c13 0%, #0d1220 100%);
+        linear-gradient(180deg, rgba(6, 10, 18, 0.58) 0%, rgba(10, 14, 24, 0.78) 100%),
+        linear-gradient(180deg, #21afe6 0%, #2eb8e8 42%, #7ad4ec 63%, #f2f3f6 100%);
       color: var(--hub-text);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.16), transparent 20%),
+        radial-gradient(circle at 82% 18%, rgba(11, 20, 39, 0.34), transparent 26%),
+        linear-gradient(180deg, rgba(9, 12, 19, 0.16), rgba(9, 12, 19, 0.44));
+      opacity: 0.9;
     }
 
     .owner-auth-controls {
@@ -46,6 +58,8 @@
       width: min(1240px, calc(100% - 32px));
       margin-left: auto;
       margin-right: auto;
+      position: relative;
+      z-index: 1;
     }
 
     header {
@@ -104,6 +118,10 @@
     }
 
     .site-tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
       padding: 10px 14px;
       border-radius: 999px;
       border: 1px solid var(--hub-line);
@@ -557,6 +575,22 @@
           <span>Discord</span>
         </a>
       </div>
+      <section class="emote-showcase" aria-label="Channel emotes">
+        <p class="emote-showcase-title">Channel emotes</p>
+        <div class="emote-showcase-row">
+          <span class="emote-chip"><img src="../assets/emotes/pbb8smile112.png" alt="pbb8 Smile emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/pbb8love112.png" alt="pbb8 Love emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/pbb8Paulina112.png" alt="pbb8 Paulina emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/pbb8Hype112.png" alt="pbb8 Hype emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/pbb8Gasm112.png" alt="pbb8 Gasm emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/pbb8treat112.png" alt="pbb8 Treat emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/ketchup112.png" alt="Ketchup emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/kappa112.png" alt="Kappa emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/poggers.png" alt="Poggers emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/PBB8Sadie112.png" alt="Sadie emote" loading="lazy" decoding="async" /></span>
+          <span class="emote-chip"><img src="../assets/emotes/IvyEmote112.png" alt="Ivy emote" loading="lazy" decoding="async" /></span>
+        </div>
+      </section>
       <p>&copy; 2026 pbb8's Speedrun Hub.</p>
     </div>
   </footer>
