@@ -1244,6 +1244,22 @@ footer {
   border-color: var(--accent);
 }
 
+.comm-edit-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.comm-edit-btn:hover {
+  background: rgba(91, 155, 245, 0.2);
+  color: var(--accent);
+}
+
 .comm-remove-btn {
   background: none;
   border: none;

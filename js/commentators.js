@@ -283,15 +283,9 @@ const CommentatorManager = (function () {
     for (const name of names) {
       const added = add(eventName, name, gameName, {
         status: "confirmed",
-        overwriteStatus: true,
+        overwriteStatus: false,
       });
       if (added) changed++;
-      else {
-        const entry = getForEvent(eventName).find(
-          (c) => normalizeCommentatorName(c.name) === normalizeCommentatorName(name)
-        );
-        if (entry && entry.status === "confirmed") changed++;
-      }
     }
     return changed;
   }
@@ -320,6 +314,68 @@ const CommentatorManager = (function () {
       saveAll(data);
       emitUpdate();
     }
+  }
+
+  /** Rename a commentator for a single event (with duplicate protection). */
+  function rename(eventName, oldName, newName, gameName) {
+    const trimmedNewName = String(newName || "").trim();
+    if (!trimmedNewName) return false;
+
+    const oldKey = normalizeCommentatorName(oldName);
+    const newKey = normalizeCommentatorName(trimmedNewName);
+    if (!oldKey || !newKey) return false;
+
+    const data = loadAll();
+    if (!Array.isArray(data[eventName])) return false;
+
+    const eventCommentators = data[eventName];
+    const targetIndex = eventCommentators.findIndex(
+      (c) => normalizeCommentatorName(c.name) === oldKey
+    );
+    if (targetIndex === -1) return false;
+
+    const duplicateIndex = eventCommentators.findIndex(
+      (c, idx) => idx !== targetIndex && normalizeCommentatorName(c.name) === newKey
+    );
+    if (duplicateIndex !== -1) return false;
+
+    eventCommentators[targetIndex].name = trimmedNewName;
+    saveAll(data);
+
+    const gameKey = normalizeGameName(gameName);
+    if (gameKey) {
+      const pools = loadGamePools();
+      const existingPool = Array.isArray(pools[gameKey]) ? pools[gameKey] : [];
+      const updated = [];
+      let insertedNewName = false;
+
+      for (const savedName of existingPool) {
+        const savedKey = normalizeCommentatorName(savedName);
+        if (!savedKey) continue;
+
+        if (savedKey === oldKey) {
+          if (!updated.some((n) => normalizeCommentatorName(n) === newKey)) {
+            updated.push(trimmedNewName);
+          }
+          insertedNewName = true;
+          continue;
+        }
+
+        if (!updated.some((n) => normalizeCommentatorName(n) === savedKey)) {
+          updated.push(savedName);
+        }
+      }
+
+      if (!insertedNewName && !updated.some((n) => normalizeCommentatorName(n) === newKey)) {
+        updated.push(trimmedNewName);
+      }
+
+      pools[gameKey] = updated;
+      saveGamePools(pools);
+    }
+
+    emitUpdate();
+    return true;
   }
 
   /** Get a summary across all events for reporting. */
@@ -352,6 +408,7 @@ const CommentatorManager = (function () {
     add,
     remove,
     setStatus,
+    rename,
     getSummary,
   };
 })();

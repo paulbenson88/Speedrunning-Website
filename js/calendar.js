@@ -287,6 +287,15 @@
     }
   }
 
+  function decodeCommentatorName(encodedValue) {
+    if (!encodedValue) return "";
+    try {
+      return decodeURIComponent(encodedValue);
+    } catch {
+      return encodedValue;
+    }
+  }
+
   function renderGameSuggestions() {
     if (!commSuggested || !commSuggestedEmpty) return;
 
@@ -333,17 +342,19 @@
 
     for (const c of comms) {
       const info = CommentatorManager.STATUSES[c.status];
+      const encodedName = encodeURIComponent(c.name);
       const li = document.createElement("li");
       li.className = `commentator-item ${info.className}`;
       li.innerHTML = `
         <span class="comm-icon">${info.icon}</span>
         <span class="comm-name">${c.name}</span>
-        <select class="comm-status-select" data-name="${c.name}">
+        <select class="comm-status-select" data-name="${encodedName}">
           ${Object.entries(CommentatorManager.STATUSES).map(([key, val]) =>
             `<option value="${key}"${key === c.status ? " selected" : ""}>${val.label}</option>`
           ).join("")}
         </select>
-        <button class="comm-remove-btn" data-name="${c.name}" title="Remove">🗑️</button>
+        <button class="comm-edit-btn" data-name="${encodedName}" title="Edit name">✏️</button>
+        <button class="comm-remove-btn" data-name="${encodedName}" title="Remove">🗑️</button>
       `;
       commList.appendChild(li);
     }
@@ -430,16 +441,41 @@
   // Status change & remove via delegation
   commList.addEventListener("change", (e) => {
     if (e.target.classList.contains("comm-status-select")) {
-      CommentatorManager.setStatus(currentModalEvent, e.target.dataset.name, e.target.value);
+      const commentatorName = decodeCommentatorName(e.target.dataset.name);
+      CommentatorManager.setStatus(currentModalEvent, commentatorName, e.target.value);
       renderCommentatorList();
       renderUpcoming();
     }
   });
 
   commList.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".comm-edit-btn");
+    if (editBtn) {
+      const currentName = decodeCommentatorName(editBtn.dataset.name);
+      const nextName = window.prompt("Edit commentator name:", currentName);
+      if (nextName === null) return;
+
+      const renamed = CommentatorManager.rename(
+        currentModalEvent,
+        currentName,
+        nextName,
+        currentModalGame
+      );
+
+      if (!renamed) {
+        window.alert("Could not rename commentator. Names must be unique on this run.");
+        return;
+      }
+
+      renderCommentatorList();
+      renderUpcoming();
+      return;
+    }
+
     const btn = e.target.closest(".comm-remove-btn");
     if (btn) {
-      CommentatorManager.remove(currentModalEvent, btn.dataset.name);
+      const commentatorName = decodeCommentatorName(btn.dataset.name);
+      CommentatorManager.remove(currentModalEvent, commentatorName);
       renderCommentatorList();
       renderUpcoming();
     }
