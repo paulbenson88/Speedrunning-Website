@@ -36,6 +36,32 @@
     });
   }
 
+  function ordinalDay(day) {
+    const mod10 = day % 10;
+    const mod100 = day % 100;
+    if (mod10 === 1 && mod100 !== 11) return `${day}st`;
+    if (mod10 === 2 && mod100 !== 12) return `${day}nd`;
+    if (mod10 === 3 && mod100 !== 13) return `${day}rd`;
+    return `${day}th`;
+  }
+
+  function fmtDiscordReadable(date) {
+    const weekday = date.toLocaleDateString(undefined, { weekday: "long" });
+    const month = date.toLocaleDateString(undefined, { month: "long" });
+    const day = ordinalDay(date.getDate());
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return `${weekday}, ${month} ${day}, ${year} ${time}`;
+  }
+
+  function discordTimestampTag(date) {
+    return `<t:${Math.floor(date.getTime() / 1000)}:F>`;
+  }
+
   /** Parse an ISO-8601 duration (e.g. PT1H35M) to a human string. */
   function fmtEstimate(iso) {
     const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -198,13 +224,17 @@
           const commKey = runCommentatorKey(ev.name, run);
           const comms = CommentatorManager.getForEvent(commKey);
           const confirmedCount = comms.filter(c => c.status === "confirmed").length;
+          const declinedCount = comms.filter(c => c.status === "declined").length;
           const totalCount = comms.length;
+          const allDeclined = totalCount > 0 && declinedCount === totalCount;
           const badgeText = totalCount > 0
-            ? `${confirmedCount}/${totalCount} confirmed`
+            ? (allDeclined ? "All declined" : `${confirmedCount}/${totalCount} confirmed`)
             : "No commentators";
           const badgeClass = totalCount > 0 && confirmedCount === totalCount
             ? "badge-complete" : totalCount > 0 ? "badge-partial" : "badge-empty";
           const editBtn = `<button class="submission-edit-btn" data-submission-key="${run.submissionKey || ""}" data-local-key="${encodeURIComponent(run.localKey || "")}" data-ev-idx="${evIdx}" data-run-idx="${runIdx}" title="Edit submission">✏️ Edit</button>`;
+          const discordTag = discordTimestampTag(runDate);
+          const discordCopyText = discordTag;
 
           marathonHTML += `
             <div class="run-card has-edit">
@@ -212,10 +242,14 @@
               <div class="run-info">
                 <span class="run-game">${run.game}</span>
                 <span class="run-time">${fmtShortDate(runDate)} ${fmtTime(runDate)} <span class="tz-note">(shown in your local timezone)</span></span>
+                <div class="discord-time-block">
+                  <button class="discord-time-copy-btn" data-copy="${encodeURIComponent(discordCopyText)}" type="button">Copy for Discord (via Hammertime)</button>
+                  <a class="discord-time-credit" href="https://hammertime.cyou/en" target="_blank" rel="noopener">Timestamp tool by Hammertime</a>
+                </div>
               </div>
               <div class="run-actions">
                 ${calDropdownHTML(evIdx, runIdx)}
-                <button class="commentator-btn ${badgeClass}" data-event="${commKey}">🎙️ Commentators <span class="comm-badge">${badgeText}</span></button>
+                <button class="commentator-btn ${badgeClass}" data-event="${commKey}" data-game="${encodeURIComponent(run.game || "")}">🎙️ Commentators <span class="comm-badge">${badgeText}</span></button>
               </div>
             </div>
           `;
@@ -239,7 +273,57 @@
   const commAddBtn = document.getElementById("commentator-add-btn");
   const commList = document.getElementById("commentator-list");
   const commEmpty = document.getElementById("commentator-empty");
+  const commSuggested = document.getElementById("commentator-suggested");
+  const commSuggestedEmpty = document.getElementById("commentator-suggested-empty");
   let currentModalEvent = null;
+  let currentModalGame = "";
+
+  function decodeGameName(encodedValue) {
+    if (!encodedValue) return "";
+    try {
+      return decodeURIComponent(encodedValue);
+    } catch {
+      return encodedValue;
+    }
+  }
+
+  function renderGameSuggestions() {
+    if (!commSuggested || !commSuggestedEmpty) return;
+
+    commSuggested.innerHTML = "";
+
+    if (!currentModalGame) {
+      commSuggestedEmpty.textContent = "No game selected for this run.";
+      commSuggestedEmpty.classList.remove("hidden");
+      return;
+    }
+
+    const saved = CommentatorManager.getForGame(currentModalGame);
+    const existing = new Set(
+      CommentatorManager.getForEvent(currentModalEvent).map((c) => c.name.toLowerCase())
+    );
+    const available = saved.filter((name) => !existing.has(name.toLowerCase()));
+
+    if (available.length > 0) {
+      commSuggestedEmpty.textContent = "";
+      commSuggestedEmpty.classList.add("hidden");
+    } else if (saved.length === 0) {
+      commSuggestedEmpty.textContent = "No saved commentators for this game yet.";
+      commSuggestedEmpty.classList.remove("hidden");
+    } else {
+      commSuggestedEmpty.textContent = "All saved commentators are already on this run.";
+      commSuggestedEmpty.classList.remove("hidden");
+    }
+
+    for (const name of available) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "comm-suggestion-btn";
+      btn.dataset.name = name;
+      btn.textContent = `+ ${name}`;
+      commSuggested.appendChild(btn);
+    }
+  }
 
   /** Render the commentator list inside the modal. */
   function renderCommentatorList() {
@@ -263,10 +347,16 @@
       `;
       commList.appendChild(li);
     }
+
+    renderGameSuggestions();
   }
 
-  function openCommentatorModal(eventName) {
+  function openCommentatorModal(eventName, gameName) {
     currentModalEvent = eventName;
+    currentModalGame = String(gameName || "").trim();
+    if (currentModalGame) {
+      CommentatorManager.applyGamePoolAsConfirmed(currentModalEvent, currentModalGame);
+    }
     modalTitle.textContent = eventName;
     commInput.value = "";
     renderCommentatorList();
@@ -277,9 +367,9 @@
   function closeCommentatorModal() {
     modal.classList.add("hidden");
     currentModalEvent = null;
+    currentModalGame = "";
     // Re-render the detail panel to update badges
     if (!detailSection.classList.contains("hidden")) {
-      const dateText = detailDate.textContent;
       // Refresh upcoming list too
       renderUpcoming();
     }
@@ -288,13 +378,13 @@
   // Event delegation for commentator buttons in detail panel
   detailList.addEventListener("click", (e) => {
     const btn = e.target.closest(".commentator-btn");
-    if (btn) openCommentatorModal(btn.dataset.event);
+    if (btn) openCommentatorModal(btn.dataset.event, decodeGameName(btn.dataset.game));
   });
 
   // Event delegation for commentator buttons in upcoming list
   upcomingList.addEventListener("click", (e) => {
     const btn = e.target.closest(".commentator-btn");
-    if (btn) openCommentatorModal(btn.dataset.event);
+    if (btn) openCommentatorModal(btn.dataset.event, decodeGameName(btn.dataset.game));
   });
 
   // Modal close
@@ -310,7 +400,7 @@
   function addCommentator() {
     const name = commInput.value.trim();
     if (!name) return;
-    const added = CommentatorManager.add(currentModalEvent, name);
+    const added = CommentatorManager.add(currentModalEvent, name, currentModalGame);
     if (!added) {
       commInput.classList.add("input-error");
       setTimeout(() => commInput.classList.remove("input-error"), 600);
@@ -318,6 +408,7 @@
     }
     commInput.value = "";
     renderCommentatorList();
+    renderUpcoming();
     commInput.focus();
   }
 
@@ -326,11 +417,22 @@
     if (e.key === "Enter") addCommentator();
   });
 
+  commSuggested?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".comm-suggestion-btn");
+    if (!btn) return;
+    const name = btn.dataset.name;
+    const added = CommentatorManager.add(currentModalEvent, name, currentModalGame);
+    if (!added) return;
+    renderCommentatorList();
+    renderUpcoming();
+  });
+
   // Status change & remove via delegation
   commList.addEventListener("change", (e) => {
     if (e.target.classList.contains("comm-status-select")) {
       CommentatorManager.setStatus(currentModalEvent, e.target.dataset.name, e.target.value);
       renderCommentatorList();
+      renderUpcoming();
     }
   });
 
@@ -339,7 +441,29 @@
     if (btn) {
       CommentatorManager.remove(currentModalEvent, btn.dataset.name);
       renderCommentatorList();
+      renderUpcoming();
     }
+  });
+
+  window.addEventListener("commentators-updated", () => {
+    if (currentModalEvent) renderCommentatorList();
+    renderUpcoming();
+  });
+
+  document.addEventListener("click", (e) => {
+    const copyBtn = e.target.closest(".discord-time-copy-btn");
+    if (!copyBtn) return;
+
+    const text = decodeURIComponent(copyBtn.dataset.copy || "");
+    if (!text) return;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const oldText = copyBtn.textContent;
+      copyBtn.textContent = "Copied";
+      setTimeout(() => {
+        copyBtn.textContent = oldText;
+      }, 1200);
+    });
   });
 
   /* ── Upcoming List ────────────────────────────────── */
@@ -380,7 +504,24 @@
       const start = new Date(ev.start);
       const end = new Date(ev.end);
       const li = document.createElement("li");
+      li.className = "upcoming-marathon-card";
       const evIdx = MARATHON_EVENTS.indexOf(ev);
+      const stats = getMarathonCommentatorStats(ev);
+      let marathonStatusClass = "ready";
+      let marathonStatusLabel = "Ready";
+      if (stats.needAskRuns > 0) {
+        marathonStatusClass = "needs-asks";
+        marathonStatusLabel = "Needs Asks";
+      } else if (stats.declinedRuns > 0 && stats.declinedRuns === stats.totalRuns) {
+        marathonStatusClass = "declined";
+        marathonStatusLabel = "Declined";
+      } else if (stats.waitingRuns > 0) {
+        marathonStatusClass = "waiting";
+        marathonStatusLabel = "Asked / Waiting";
+      }
+
+      const nextTs = nextUpcomingRunTime(ev);
+      const nextRunLabel = nextTs ? fmtShortDate(new Date(nextTs)) : fmtShortDate(start);
 
       let runsHTML = "";
       const runs = ev.runs || [];
@@ -393,13 +534,18 @@
         const commKey = runCommentatorKey(ev.name, run);
         const comms = CommentatorManager.getForEvent(commKey);
         const confirmedCount = comms.filter(c => c.status === "confirmed").length;
+        const declinedCount = comms.filter(c => c.status === "declined").length;
         const totalCount = comms.length;
+        const allDeclined = totalCount > 0 && declinedCount === totalCount;
         const badgeText = totalCount > 0
-          ? `${confirmedCount}/${totalCount} confirmed`
+          ? (allDeclined ? "All declined" : `${confirmedCount}/${totalCount} confirmed`)
           : "No commentators";
         const badgeClass = totalCount > 0 && confirmedCount === totalCount
           ? "badge-complete" : totalCount > 0 ? "badge-partial" : "badge-empty";
+        const runState = getRunCommentatorState(ev, run);
         const editBtn = `<button class="submission-edit-btn" data-submission-key="${run.submissionKey || ""}" data-local-key="${encodeURIComponent(run.localKey || "")}" data-ev-idx="${evIdx}" data-run-idx="${runIdx}" title="Edit submission">✏️ Edit</button>`;
+        const discordTag = discordTimestampTag(runDate);
+        const discordCopyText = discordTag;
 
         runsHTML += `
           <div class="run-card has-edit">
@@ -407,17 +553,28 @@
             <div class="run-info">
               <span class="run-game">${run.game}</span>
               <span class="run-time">${fmtShortDate(runDate)} ${fmtTime(runDate)} <span class="tz-note">(shown in your local timezone)</span></span>
+              <span class="upcoming-run-state ${runState.className}">${runState.label}</span>
+              <div class="discord-time-block">
+                <button class="discord-time-copy-btn" data-copy="${encodeURIComponent(discordCopyText)}" type="button">Copy for Discord (via Hammertime)</button>
+                <a class="discord-time-credit" href="https://hammertime.cyou/en" target="_blank" rel="noopener">Timestamp tool by Hammertime</a>
+              </div>
             </div>
             <div class="run-actions">
               ${calDropdownHTML(evIdx, runIdx)}
-              <button class="commentator-btn ${badgeClass}" data-event="${commKey}">🎙️ <span class="comm-badge">${badgeText}</span></button>
+              <button class="commentator-btn ${badgeClass}" data-event="${commKey}" data-game="${encodeURIComponent(run.game || "")}">🎙️ <span class="comm-badge">${badgeText}</span></button>
             </div>
           </div>
         `;
       }
 
       li.innerHTML = `
-        <span class="event-name">${ev.name}</span>
+        <div class="upcoming-marathon-head">
+          <span class="upcoming-marathon-title">${ev.name}</span>
+          <span class="upcoming-marathon-status ${marathonStatusClass}">${marathonStatusLabel}</span>
+        </div>
+        <div class="upcoming-marathon-meta">
+          Next run: ${nextRunLabel} · ${stats.confirmedRuns}/${stats.totalRuns} runs confirmed
+        </div>
         ${ev.twitch ? `<a class="twitch-link" href="https://twitch.tv/${ev.twitch}" target="_blank" rel="noopener"><span class="twitch-icon">&#9656;</span> twitch.tv/${ev.twitch}</a>` : ""}
         ${ev.url ? `<a class="schedule-link" href="${ev.url}" target="_blank" rel="noopener">📋 Full Schedule</a>` : ""}
         ${runsHTML ? `<div class="runs-section">${runsHTML}</div>` : ""}
@@ -425,6 +582,76 @@
       upcomingList.appendChild(li);
     }
   }
+
+  function getRunCommentatorState(ev, run) {
+    const commKey = runCommentatorKey(ev.name, run);
+    const comms = CommentatorManager.getForEvent(commKey);
+    const confirmedCount = comms.filter((c) => c.status === "confirmed").length;
+    const declinedCount = comms.filter((c) => c.status === "declined").length;
+    const totalCount = comms.length;
+    const hasOutreach = comms.some((c) => c.status !== "not-asked");
+
+    if (confirmedCount > 0) {
+      return {
+        className: "ready",
+        label: `Ready (${confirmedCount} confirmed)`
+      };
+    }
+
+    if (hasOutreach) {
+      if (totalCount > 0 && declinedCount === totalCount) {
+        return {
+          className: "declined",
+          label: "Declined"
+        };
+      }
+      return {
+        className: "waiting",
+        label: "Asked / Waiting"
+      };
+    }
+
+    return {
+      className: "needs-asks",
+      label: "Needs Asks"
+    };
+  }
+
+  function getMarathonCommentatorStats(ev) {
+    const runs = ev.runs || [];
+    let needAskRuns = 0;
+    let waitingRuns = 0;
+    let confirmedRuns = 0;
+    let declinedRuns = 0;
+
+    for (const run of runs) {
+      const commKey = runCommentatorKey(ev.name, run);
+      const comms = CommentatorManager.getForEvent(commKey);
+      const hasConfirmed = comms.some((c) => c.status === "confirmed");
+      const hasAny = comms.length > 0;
+      const allDeclined = hasAny && comms.every((c) => c.status === "declined");
+      const hasOutreach = comms.some((c) => c.status !== "not-asked");
+
+      if (hasConfirmed) {
+        confirmedRuns++;
+      } else if (allDeclined) {
+        declinedRuns++;
+      } else if (hasOutreach) {
+        waitingRuns++;
+      } else {
+        needAskRuns++;
+      }
+    }
+
+    return {
+      totalRuns: runs.length,
+      needAskRuns,
+      waitingRuns,
+      confirmedRuns,
+      declinedRuns,
+    };
+  }
+
 
   function refreshCalendarFromEvents() {
     rebuildEventMap();

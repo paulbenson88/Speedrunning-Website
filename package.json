@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate:ics": "node scripts/generate-ics.mjs"
+    "generate:ics": "node scripts/generate-ics.mjs",
+    "scan:oengus": "node scripts/scan-oengus.mjs"
   },
   "dependencies": {
     "firebase-admin": "^13.4.0"

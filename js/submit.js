@@ -172,20 +172,102 @@
     return "";
   }
 
+  function extractOengusMarathonUrl(scheduleUrl) {
+    try {
+      const u = new URL(scheduleUrl);
+      if (!u.hostname.includes("oengus.io")) return "";
+      const parts = u.pathname.split("/").filter(Boolean);
+      const ix = parts.indexOf("marathon");
+      if (ix >= 0 && parts[ix + 1]) {
+        return `${u.origin}/marathon/${parts[ix + 1]}`;
+      }
+    } catch {
+      return "";
+    }
+    return "";
+  }
+
+  function extractFirstTwitchUrl(text) {
+    const m = String(text || "").match(/https?:\/\/(?:www\.)?twitch\.tv\/[A-Za-z0-9_]+(?:\?[^\s"'<)]*)?/i);
+    return m ? m[0] : "";
+  }
+
+  async function fetchOengusMarathonTwitch(scheduleUrl) {
+    const marathonUrl = extractOengusMarathonUrl(scheduleUrl);
+    if (!marathonUrl) return "";
+
+    try {
+      const text = await fetchTextBestEffort(marathonUrl);
+      return extractFirstTwitchUrl(text);
+    } catch {
+      return "";
+    }
+  }
+
   function parseOengusLikeRuns(text, fallbackEvent) {
     const runs = [];
-    const regex = /"game"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"[\s\S]{0,220}?"category"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"[\s\S]{0,260}?"date"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"[\s\S]{0,220}?"estimate"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/g;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
+    const src = String(text || "");
+    const dateRegex = /"date"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/g;
+
+    function unescapeJsonString(v) {
+      return String(v || "")
+        .replaceAll('\\"', '"')
+        .replaceAll('\\/', '/')
+        .replaceAll('\\n', ' ')
+        .replaceAll('\\t', ' ')
+        .trim();
+    }
+
+    function pickNearest(windowText, patterns) {
+      for (const re of patterns) {
+        const m = windowText.match(re);
+        if (m && m[1]) return unescapeJsonString(m[1]);
+      }
+      return "";
+    }
+
+    const seen = new Set();
+    let dateMatch;
+    while ((dateMatch = dateRegex.exec(src)) !== null) {
+      const dateIso = unescapeJsonString(dateMatch[1]);
+      const index = dateMatch.index;
+      const from = Math.max(0, index - 2200);
+      const to = Math.min(src.length, index + 2200);
+      const win = src.slice(from, to);
+
+      const game = pickNearest(win, [
+        /"game"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/,
+        /"gameName"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/,
+        /"name"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"\s*,\s*"(?:category|categoryName)"/
+      ]);
+
+      const category = pickNearest(win, [
+        /"category"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/,
+        /"categoryName"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/
+      ]);
+
+      const estimateText = pickNearest(win, [
+        /"estimate"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/,
+        /"estimateText"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/
+      ]);
+
+      if (!game || !category || !dateIso) continue;
+
+      const key = `${game}|${category}|${dateIso}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
       runs.push({
         eventName: fallbackEvent,
-        game: match[1].replaceAll('\\"', '"'),
-        category: match[2].replaceAll('\\"', '"'),
-        dateIso: match[3],
-        estimateText: match[4]
+        game,
+        category,
+        dateIso,
+        estimateText: estimateText || "00:35:00"
       });
-      if (runs.length >= 200) break;
+
+      if (runs.length >= 250) break;
     }
+
     return runs;
   }
 
@@ -232,6 +314,7 @@
     const categoryName = document.getElementById("categoryName");
     const runDateLocal = document.getElementById("runDateLocal");
     const estimateMinutes = document.getElementById("estimateMinutes");
+    const streamUrl = document.getElementById("streamUrl");
 
     if (runnerType) runnerType.value = runnerType.value || "my-run";
     if (runnerName && !runnerName.value) runnerName.value = "pbb8";
@@ -252,6 +335,10 @@
     if (estimateMinutes && run.estimateText) {
       const mins = parseDurationToMinutes(run.estimateText);
       if (mins) estimateMinutes.value = mins;
+    }
+
+    if (streamUrl && !streamUrl.value && run.streamUrl) {
+      streamUrl.value = run.streamUrl;
     }
   }
 
@@ -327,6 +414,10 @@
       try {
         const text = await fetchTextBestEffort(scheduleUrl);
         const slug = extractEventSlug(scheduleUrl) || "Imported Marathon";
+        let marathonStreamUrl = "";
+        if (scheduleUrl.includes("oengus.io")) {
+          marathonStreamUrl = await fetchOengusMarathonTwitch(scheduleUrl);
+        }
 
         let runs = [];
         if (scheduleUrl.includes("oengus.io")) {
@@ -341,7 +432,12 @@
           if (runs.length === 0) runs = parseHoraroTableRuns(text, slug);
         }
 
-        importedRuns = runs.filter((run) => run.game && run.category);
+        importedRuns = runs
+          .filter((run) => run.game && run.category)
+          .map((run) => ({
+            ...run,
+            streamUrl: run.streamUrl || marathonStreamUrl || ""
+          }));
 
         if (importedRuns.length === 0) {
           importStatus.textContent = "Could not parse runs from that link. You can still fill the form manually.";

@@ -23,5 +23,10 @@ service cloud.firestore {
       allow read: if true;
       allow create, update, delete: if isOwner();
     }
+
+    match /commentatorData/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner();
+    }
   }
 }

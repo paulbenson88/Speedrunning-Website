@@ -194,4 +194,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Running 4 Reels 2026",
+    start: "2026-08-07T14:00:00Z",
+    end: "2026-08-10T03:00:00Z",
+    twitch: "speedruns4reelhope",
+    url: "https://oengus.io/marathon/r4r26/schedule/r4r26",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-08-09T23:59:00Z",
+        runId: "r4r26-garden-trills",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
