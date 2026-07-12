@@ -127,4 +127,14 @@ DESCRIPTION:Watch at: https://twitch.tv/speedyadventures
 URL:https://twitch.tv/speedyadventures
 LOCATION:https://twitch.tv/speedyadventures
 END:VEVENT
+BEGIN:VEVENT
+UID:run-r4r26-garden-trills@speedruncalendar
+DTSTAMP:20260809T235900Z
+DTSTART:20260809T235900Z
+DTEND:20260810T002400Z
+SUMMARY:Garden Trills - Running 4 Reels 2026
+DESCRIPTION:Watch at: https://twitch.tv/speedruns4reelhope
+URL:https://twitch.tv/speedruns4reelhope
+LOCATION:https://twitch.tv/speedruns4reelhope
+END:VEVENT
 END:VCALENDAR
