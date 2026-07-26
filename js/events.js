@@ -195,6 +195,33 @@ const MARATHON_EVENTS = [
     ],
   },
   {
+    name: "Games on Fast Forward 2026",
+    start: "2026-08-01T15:00:00Z",
+    end: "2026-08-03T10:48:00Z",
+    twitch: "exclamation_markyt",
+    url: "https://oengus.io/marathon/goff2026/schedule/goff2026schedule",
+    runs: [
+      {
+        game: "Ollie-Oop",
+        category: "All Missions",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-08-02T14:22:00Z",
+        runId: 53115,
+        runner: "pbb8",
+      },
+      {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT30M",
+        date: "2026-08-02T15:02:00Z",
+        runId: 53116,
+        runner: "pbb8",
+      },
+    ],
+  },
+  {
     name: "Running 4 Reels 2026",
     start: "2026-08-07T14:00:00Z",
     end: "2026-08-10T03:00:00Z",
