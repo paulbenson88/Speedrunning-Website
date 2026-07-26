@@ -233,7 +233,7 @@ function keepUpcomingByEnd(events, now = new Date()) {
   });
 }
 
-function buildCalendarText({ calendarName, description, events }) {
+function buildCalendarText({ calendarName, description, events, now = new Date() }) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -246,11 +246,13 @@ function buildCalendarText({ calendarName, description, events }) {
     "X-PUBLISHED-TTL:PT15M"
   ];
 
+  const dtstamp = icsTimestamp(now);
+
   for (const ev of events) {
     lines.push(
       "BEGIN:VEVENT",
       `UID:${ev.uid}`,
-      `DTSTAMP:${icsTimestamp(ev.start)}`,
+      `DTSTAMP:${dtstamp}`,
       `DTSTART:${icsTimestamp(ev.start)}`,
       `DTEND:${icsTimestamp(ev.end)}`,
       `SUMMARY:${escapeIcs(ev.summary)}`,
