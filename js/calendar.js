@@ -910,14 +910,8 @@
   const subscribeIntro = document.getElementById("subscribe-intro");
 
   function getIcsUrl(feedType) {
-    // Build the full URL to calendar.ics based on current page location
-    const loc = window.location;
-    let base = loc.origin + loc.pathname;
-    // Remove trailing filename (e.g. index.html) but keep directory
-    base = base.replace(/\/[^/]*\.[^/]*$/, "");
-    // Ensure trailing slash
-    if (!base.endsWith("/")) base += "/";
-    return `${base}${feedType === "others" ? "calendar-others.ics" : "calendar.ics"}`;
+    // calendar.ics and calendar-others.ics live at the site root
+    return `${window.location.origin}/${feedType === "others" ? "calendar-others.ics" : "calendar.ics"}`;
   }
 
   function openSubscribeModal(feedType) {
