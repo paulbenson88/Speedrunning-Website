@@ -24,6 +24,7 @@
 
     html {
       color-scheme: dark;
+      scroll-behavior: smooth;
     }
 
     body {
@@ -142,6 +143,8 @@
     main.runs-page {
       max-width: 1240px;
       padding: 0 0 48px;
+      --embed-preview-max: clamp(250px, 28vw, 420px);
+      --embed-watch-max: min(100%, 1080px);
     }
 
     .runs-filter,
@@ -180,9 +183,28 @@
     .run-entry {
       margin-bottom: 20px;
       padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(230px, 0.85fr) minmax(300px, 1.15fr);
+      grid-template-areas:
+        "title media"
+        "game media"
+        "date media"
+        "fallback media"
+        "actions actions";
+      column-gap: 24px;
+      row-gap: 8px;
+      align-items: start;
+      transition: width 260ms ease, margin 260ms ease, border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+    }
+
+    .run-entry.is-active {
+      border-color: rgba(126, 242, 255, 0.45);
+      background: var(--hub-panel-strong);
+      box-shadow: 0 28px 88px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(126, 242, 255, 0.14) inset;
     }
 
     .run-event-title {
+      grid-area: title;
       margin: 0;
       font-family: "Fraunces", serif;
       font-size: 2rem;
@@ -190,6 +212,7 @@
     }
 
     .run-event-game {
+      grid-area: game;
       margin-top: 10px;
       color: var(--hub-text);
       font-size: 1rem;
@@ -197,6 +220,7 @@
     }
 
     .run-event-date {
+      grid-area: date;
       margin-top: 6px;
       color: var(--hub-gold);
       font-size: 0.84rem;
@@ -206,21 +230,56 @@
     }
 
     .embed-wrap {
-      margin-top: 18px;
+      grid-area: media;
+      margin-top: 0;
+      position: static;
+      padding-bottom: 0;
+      width: min(100%, var(--embed-preview-max));
+      aspect-ratio: 16 / 9;
+      justify-self: end;
       border-radius: 18px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(0, 0, 0, 0.25);
+      transition: width 260ms ease, border-color 220ms ease, box-shadow 260ms ease, transform 220ms ease;
     }
 
     .embed-wrap iframe {
+      position: static;
       display: block;
       width: 100%;
-      aspect-ratio: 16 / 9;
+      height: 100%;
+      min-height: 0;
       border: 0;
     }
 
+    .run-entry.is-watching .embed-wrap {
+      width: min(100%, var(--embed-watch-max));
+      justify-self: center;
+      border-color: rgba(126, 242, 255, 0.42);
+      box-shadow: 0 26px 90px rgba(0, 0, 0, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .run-entry.is-watching {
+      width: min(96vw, 1520px);
+      margin-left: 50%;
+      transform: translateX(-50%);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "title"
+        "game"
+        "date"
+        "media"
+        "fallback"
+        "actions";
+      row-gap: 12px;
+      border-color: rgba(126, 242, 255, 0.55);
+      background: rgba(28, 36, 57, 0.96);
+    }
+
     .embed-fallback {
+      grid-area: fallback;
       margin-top: 14px;
       color: var(--hub-muted);
       line-height: 1.65;
@@ -232,7 +291,9 @@
     }
 
     .vod-actions {
+      grid-area: actions;
       margin-top: 16px;
+      justify-self: start;
     }
 
     .vod-edit-btn {
@@ -260,6 +321,29 @@
       padding: 20px;
     }
 
+    @media (max-width: 980px) {
+      .run-entry,
+      .run-entry.is-watching {
+        width: auto;
+        margin-left: 0;
+        transform: none;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "title"
+          "game"
+          "date"
+          "media"
+          "fallback"
+          "actions";
+      }
+
+      .embed-wrap,
+      .run-entry.is-watching .embed-wrap {
+        width: 100%;
+        justify-self: stretch;
+      }
+    }
+
     @media (max-width: 720px) {
       header.topbar {
         border-radius: 24px;
@@ -284,8 +368,23 @@
         padding: 20px;
       }
 
+      .embed-wrap,
+      .run-entry.is-watching .embed-wrap {
+        width: 100%;
+      }
+
       .run-event-title {
         font-size: 1.65rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .run-entry {
+        transition: none;
       }
     }
   </style>
@@ -316,6 +415,66 @@
       <select id="game-filter"></select>
     </div>
 
+    <section class="run-entry" data-game="Garden Trills" data-run-id="speedadv26-garden-trills">
+      <h2 class="run-event-title">Speedy Adventures 2026</h2>
+      <p class="run-event-game">Garden Trills — Any% (Normal Mode)</p>
+      <p class="run-event-date">July 25, 2026</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/-zv7k3Dgy0M"
+          title="Speedy Adventures 2026 Garden Trills YouTube VOD"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/-zv7k3Dgy0M?si=5JUrSBM0wJBWpiVh" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
+    </section>
+
+    <section class="run-entry" data-game="Garden Trills" data-run-id="istiptop26-garden-trills">
+      <h2 class="run-event-title">InstaTipTopathon 2026</h2>
+      <p class="run-event-game">Garden Trills — Any% (Normal Mode)</p>
+      <p class="run-event-date">July 18, 2026</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/6mis8TnpcAY"
+          title="InstaTipTopathon 2026 Garden Trills YouTube VOD"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/6mis8TnpcAY?si=89jgl7L2eL6x62tD" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
+    </section>
+
+    <section class="run-entry" data-game="Bad Way" data-run-id="istiptop26-bad-way">
+      <h2 class="run-event-title">InstaTipTopathon 2026</h2>
+      <p class="run-event-game">Bad Way — Any% (No Torch Zip)</p>
+      <p class="run-event-date">July 18, 2026</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/j0ILLYOm2SE"
+          title="InstaTipTopathon 2026 Bad Way YouTube VOD"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/j0ILLYOm2SE?si=8gXDldHmGZnol8c7" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
+    </section>
+
+    <section class="run-entry" data-game="Ollie-Oop" data-run-id="gdq-hotfix-express-lane-ollie-oop-tentative">
+      <h2 class="run-event-title">GDQ Hotfix: Express Lane</h2>
+      <p class="run-event-game">Ollie-Oop — Express Lane (9:00 PM CST start tentative)</p>
+      <p class="run-event-date">July 15, 2026</p>
+      <div class="embed-wrap">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/yTTtpdt1z24?start=2200"
+          title="GDQ Hotfix Express Lane Ollie-Oop YouTube VOD"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://www.youtube.com/watch?v=yTTtpdt1z24" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
+    </section>
+
     <section class="run-entry" data-game="Garden Trills">
       <h2 class="run-event-title">Speedromizer IX</h2>
       <p class="run-event-game">Garden Trills — Any% Normal</p>
@@ -342,6 +501,7 @@
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/-q0gUjHfKu8" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
     </section>
 
     <section class="run-entry" data-game="Bad Way" data-run-id="prevent-a-thon-7-bad-way">
@@ -371,6 +531,7 @@
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/IXeoRU__9OU" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
     </section>
 
     <section class="run-entry" data-game="Ollie-Oop" data-run-id="51011">
@@ -400,6 +561,7 @@
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/_gsMWvE6SoM" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
     </section>
 
     <section class="run-entry" data-game="Legacy of Kain: Soul Reaver 2">
@@ -413,6 +575,7 @@
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/n1hN4s5a-H0" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
     </section>
 
     <section class="run-entry" data-game="Bad Way">
@@ -426,6 +589,7 @@
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If YouTube does not load here, <a href="https://youtu.be/eHsA_vrLj2g" target="_blank" rel="noopener">open this VOD on YouTube</a>.</p>
     </section>
   </main>
 
@@ -505,6 +669,7 @@
       const ownerSignOutBtn = document.getElementById('owner-signout-btn');
       const VOD_OVERRIDES_KEY = 'runsPageVodOverridesV1';
       const originalMediaByKey = new Map();
+      const getEntries = () => [...document.querySelectorAll('.run-entry')];
       let firebaseDb = null;
       let ownerState = { isOwner: false, user: null, ownerConfigured: false, authReady: false };
 
@@ -707,9 +872,14 @@
             return null;
           }
 
+          const embedUrl = new URL(`https://www.youtube-nocookie.com/embed/${videoId}`);
+          embedUrl.searchParams.set('enablejsapi', '1');
+          embedUrl.searchParams.set('playsinline', '1');
+          embedUrl.searchParams.set('origin', window.location.origin);
+
           return {
             kind: 'youtube',
-            embedSrc: `https://www.youtube-nocookie.com/embed/${videoId}`,
+            embedSrc: embedUrl.toString(),
             sourceUrl: rawUrl
           };
         }
@@ -968,6 +1138,349 @@
         });
       }
 
+      function getVisibleEntries() {
+        return getEntries().filter((entry) => entry.style.display !== 'none');
+      }
+
+      function findClosestEntryToViewportCenter(entries) {
+        const viewportCenter = window.innerHeight / 2;
+        let closest = null;
+        let closestDistance = Infinity;
+
+        entries.forEach((entry) => {
+          const rect = entry.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          const distance = Math.abs(center - viewportCenter);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closest = entry;
+          }
+        });
+
+        return closest;
+      }
+
+      let activeEntry = null;
+      let observer = null;
+
+      function setActiveEntry(entry) {
+        if (activeEntry === entry) {
+          return;
+        }
+
+        if (activeEntry) {
+          activeEntry.classList.remove('is-active');
+        }
+
+        activeEntry = entry || null;
+
+        if (activeEntry) {
+          activeEntry.classList.add('is-active');
+        }
+      }
+
+      function centerEntry(entry, forceSmooth = false) {
+        if (!entry) {
+          return;
+        }
+
+        const rect = entry.getBoundingClientRect();
+        const viewportCenter = window.innerHeight / 2;
+        const entryCenter = rect.top + rect.height / 2;
+        if (Math.abs(entryCenter - viewportCenter) < 36) {
+          return;
+        }
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const behavior = (!reduceMotion && forceSmooth) ? 'smooth' : 'auto';
+
+        entry.scrollIntoView({
+          behavior,
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+
+      function isYouTubeEmbed(iframe) {
+        const src = iframe.getAttribute('src') || '';
+        return src.includes('youtube-nocookie.com/embed/') || src.includes('youtube.com/embed/');
+      }
+
+      function ensureYouTubeApiSupport() {
+        const frames = [...runsMain.querySelectorAll('.embed-wrap iframe')];
+        frames.forEach((iframe) => {
+          if (!isYouTubeEmbed(iframe)) {
+            return;
+          }
+
+          try {
+            const raw = iframe.getAttribute('src') || '';
+            const url = new URL(raw, window.location.origin);
+            if (url.searchParams.get('enablejsapi') === '1') {
+              return;
+            }
+
+            url.searchParams.set('enablejsapi', '1');
+            if (!url.searchParams.has('playsinline')) {
+              url.searchParams.set('playsinline', '1');
+            }
+            url.searchParams.set('origin', window.location.origin);
+            iframe.src = url.toString();
+          } catch (_) {
+            // Ignore malformed src values and leave original iframe untouched.
+          }
+        });
+      }
+
+      function pauseYouTubeFrame(iframe) {
+        const payloadObj = {
+          event: 'command',
+          func: 'pauseVideo',
+          args: []
+        };
+        const payloadText = JSON.stringify(payloadObj);
+        const targetOrigins = ['https://www.youtube.com', 'https://www.youtube-nocookie.com', '*'];
+
+        targetOrigins.forEach((origin) => {
+          try {
+            iframe.contentWindow?.postMessage(payloadObj, origin);
+            iframe.contentWindow?.postMessage(payloadText, origin);
+          } catch (_) {
+            // Ignore and let other origins/fallback handling continue.
+          }
+        });
+      }
+
+      function stopPlaybackInOtherEntries(currentEntry) {
+        if (!currentEntry) {
+          return;
+        }
+
+        const currentFrame = currentEntry.querySelector('.embed-wrap iframe');
+        const allFrames = [...runsMain.querySelectorAll('.run-entry .embed-wrap iframe')];
+
+        allFrames.forEach((frame) => {
+          if (currentFrame && frame === currentFrame) {
+            return;
+          }
+
+          const src = frame.getAttribute('src') || '';
+          if (!src) {
+            return;
+          }
+
+          if (isYouTubeEmbed(frame)) {
+            pauseYouTubeFrame(frame);
+            return;
+          }
+
+          // Twitch/other embeds: use a hard stop so only one run plays at a time.
+          frame.src = src;
+        });
+      }
+
+      function centerFromIntentTarget(target) {
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const entry = target.closest('.run-entry');
+        if (!entry || entry.style.display === 'none') {
+          return;
+        }
+
+        setActiveEntry(entry);
+        centerEntry(entry, true);
+      }
+
+      let watchingEntry = null;
+
+      function setWatchingEntry(entry) {
+        if (watchingEntry === entry) {
+          return;
+        }
+
+        if (watchingEntry) {
+          watchingEntry.classList.remove('is-watching');
+        }
+
+        watchingEntry = entry || null;
+
+        if (watchingEntry) {
+          watchingEntry.classList.add('is-watching');
+        }
+      }
+
+      let lastPlaybackSwitchAt = 0;
+      function switchPlaybackFromIntentTarget(target) {
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const now = Date.now();
+        if (now - lastPlaybackSwitchAt < 110) {
+          return;
+        }
+        lastPlaybackSwitchAt = now;
+
+        const entry = target.closest('.run-entry');
+        if (!entry || entry.style.display === 'none') {
+          return;
+        }
+
+        setWatchingEntry(entry);
+        stopPlaybackInOtherEntries(entry);
+      }
+
+      function refreshRunObserver() {
+        if (observer) {
+          observer.disconnect();
+        }
+
+        const visibleEntries = getVisibleEntries();
+        if (!visibleEntries.length) {
+          setActiveEntry(null);
+          return;
+        }
+
+        observer = new IntersectionObserver((entries) => {
+          let bestEntry = null;
+          let bestRatio = 0;
+
+          entries.forEach((item) => {
+            if (!item.isIntersecting || item.target.style.display === 'none') {
+              return;
+            }
+
+            if (item.intersectionRatio > bestRatio) {
+              bestRatio = item.intersectionRatio;
+              bestEntry = item.target;
+            }
+          });
+
+          if (bestEntry && bestRatio >= 0.45) {
+            setActiveEntry(bestEntry);
+          }
+        }, {
+          root: null,
+          threshold: [0.25, 0.45, 0.65, 0.85],
+          rootMargin: '-12% 0px -12% 0px'
+        });
+
+        visibleEntries.forEach((entry) => observer.observe(entry));
+
+        const startingEntry = findClosestEntryToViewportCenter(visibleEntries) || visibleEntries[0];
+        setActiveEntry(startingEntry);
+      }
+
+      runsMain.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const intentTarget = target.closest('.embed-wrap, .embed-fallback a, .run-event-title, .run-event-game');
+        if (!intentTarget) {
+          return;
+        }
+
+        centerFromIntentTarget(intentTarget);
+
+        if (intentTarget.closest('.embed-wrap')) {
+          switchPlaybackFromIntentTarget(intentTarget);
+        }
+      });
+
+      runsMain.addEventListener('pointerdown', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const intentTarget = target.closest('.embed-wrap, .embed-fallback a, .run-event-title, .run-event-game');
+        if (!intentTarget) {
+          return;
+        }
+
+        centerFromIntentTarget(intentTarget);
+
+        if (intentTarget.closest('.embed-wrap')) {
+          switchPlaybackFromIntentTarget(intentTarget);
+        }
+      }, true);
+
+      runsMain.addEventListener('focusin', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        if (!target.matches('.embed-wrap iframe')) {
+          return;
+        }
+
+        centerFromIntentTarget(target);
+        switchPlaybackFromIntentTarget(target);
+      });
+
+      let lastEmbedIntentAt = 0;
+
+      runsMain.addEventListener('pointerover', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const wrap = target.closest('.embed-wrap');
+        if (!wrap) {
+          return;
+        }
+
+        const now = Date.now();
+        if (now - lastEmbedIntentAt < 280) {
+          return;
+        }
+
+        lastEmbedIntentAt = now;
+        centerFromIntentTarget(wrap);
+      });
+
+      runsMain.addEventListener('touchstart', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const wrap = target.closest('.embed-wrap');
+        if (!wrap) {
+          return;
+        }
+
+        centerFromIntentTarget(wrap);
+      }, { passive: true });
+
+      window.addEventListener('blur', () => {
+        // Clicking into a cross-origin iframe often blurs the parent window
+        // without dispatching a normal click/focus event we can observe.
+        window.setTimeout(() => {
+          const active = document.activeElement;
+          if (!(active instanceof Element)) {
+            return;
+          }
+
+          if (!active.matches('.embed-wrap iframe')) {
+            return;
+          }
+
+          centerFromIntentTarget(active);
+          switchPlaybackFromIntentTarget(active);
+        }, 0);
+      });
+
+      window.addEventListener('resize', () => {
+        refreshRunObserver();
+      });
+
       addRecentPlaceholders();
 
       // Re-sort all entries by date descending so static + dynamic are interleaved correctly
@@ -982,6 +1495,7 @@
       })();
 
       setupTwitchEmbeds();
+      ensureYouTubeApiSupport();
 
       if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
         ownerSignInBtn.addEventListener('click', async () => {
@@ -1014,8 +1528,6 @@
         await addVodActions(false);
       }
 
-      const getEntries = () => [...document.querySelectorAll('.run-entry')];
-
       // Build unique game list
       const games = [...new Set(getEntries().map(e => e.dataset.game))].sort();
       const allOpt = document.createElement('option');
@@ -1033,6 +1545,21 @@
         getEntries().forEach(entry => {
           entry.style.display = (!game || entry.dataset.game === game) ? '' : 'none';
         });
+
+        if (watchingEntry && watchingEntry.style.display === 'none') {
+          watchingEntry.classList.remove('is-watching');
+          watchingEntry = null;
+        }
+
+        refreshRunObserver();
+
+        if (game) {
+          const visibleEntries = getVisibleEntries();
+          if (visibleEntries.length) {
+            setActiveEntry(visibleEntries[0]);
+            centerEntry(visibleEntries[0], true);
+          }
+        }
       }
 
       // Read from URL on load
@@ -1040,6 +1567,7 @@
       const initial = params.get('game') || '';
       if (initial) select.value = initial;
       applyFilter(initial);
+      refreshRunObserver();
 
       // Update URL on change
       select.addEventListener('change', () => {
