@@ -144,7 +144,8 @@
       max-width: 1240px;
       padding: 0 0 48px;
       --embed-preview-max: clamp(250px, 28vw, 420px);
-      --embed-watch-max: min(100%, 1080px);
+      --embed-watch-max: min(100%, 920px);
+      --run-card-width: 840px;
     }
 
     .runs-filter,
@@ -182,19 +183,25 @@
 
     .run-entry {
       margin-bottom: 20px;
+      margin-left: auto;
+      margin-right: auto;
       padding: 24px;
       display: grid;
-      grid-template-columns: minmax(230px, 0.85fr) minmax(300px, 1.15fr);
+      width: min(100%, var(--run-card-width));
+      max-width: 100%;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, var(--embed-preview-max));
       grid-template-areas:
         "title media"
         "game media"
         "date media"
         "fallback media"
         "actions actions";
-      column-gap: 24px;
+      column-gap: 12px;
       row-gap: 8px;
       align-items: start;
-      transition: width 260ms ease, margin 260ms ease, border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+      transform-origin: 50% 12%;
+      transition: width 380ms cubic-bezier(0.2, 0.8, 0.2, 1), margin 380ms cubic-bezier(0.2, 0.8, 0.2, 1), padding 320ms cubic-bezier(0.2, 0.8, 0.2, 1), row-gap 320ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 240ms ease, box-shadow 280ms ease, background-color 280ms ease, transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: width, margin, transform;
     }
 
     .run-entry.is-active {
@@ -232,7 +239,7 @@
     .embed-wrap {
       grid-area: media;
       margin-top: 0;
-      position: static;
+      position: relative;
       padding-bottom: 0;
       width: min(100%, var(--embed-preview-max));
       aspect-ratio: 16 / 9;
@@ -241,7 +248,9 @@
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(0, 0, 0, 0.25);
-      transition: width 260ms ease, border-color 220ms ease, box-shadow 260ms ease, transform 220ms ease;
+      transform-origin: 50% 12%;
+      transition: width 180ms ease-out, border-color 240ms ease, box-shadow 300ms ease;
+      will-change: transform;
     }
 
     .embed-wrap iframe {
@@ -253,16 +262,26 @@
       border: 0;
     }
 
+    .embed-activate-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
     .run-entry.is-watching .embed-wrap {
       width: min(100%, var(--embed-watch-max));
       justify-self: center;
       border-color: rgba(126, 242, 255, 0.42);
       box-shadow: 0 26px 90px rgba(0, 0, 0, 0.5);
-      transform: translateY(-1px);
+      transform: none;
     }
 
     .run-entry.is-watching {
-      width: min(96vw, 1520px);
+      width: min(92vw, 1180px);
       margin-left: 50%;
       transform: translateX(-50%);
       grid-template-columns: minmax(0, 1fr);
@@ -273,9 +292,38 @@
         "media"
         "fallback"
         "actions";
-      row-gap: 12px;
+      row-gap: 4px;
       border-color: rgba(126, 242, 255, 0.55);
       background: rgba(28, 36, 57, 0.96);
+    }
+
+    .run-entry:not(.is-watching) .embed-wrap {
+      transform: none;
+    }
+
+    .run-entry.is-watching .run-event-title,
+    .run-entry.is-watching .run-event-game,
+    .run-entry.is-watching .run-event-date,
+    .run-entry.is-watching .embed-fallback {
+      width: 100%;
+      justify-self: center;
+      text-align: center;
+    }
+
+    .run-entry.is-watching .run-event-game {
+      margin-top: 4px;
+    }
+
+    .run-entry.is-watching .run-event-date {
+      margin-top: 2px;
+    }
+
+    .run-entry.is-watching .embed-wrap {
+      margin-top: 8px;
+    }
+
+    .run-entry.is-watching .vod-actions {
+      justify-self: center;
     }
 
     .embed-fallback {
@@ -326,6 +374,7 @@
       .run-entry.is-watching {
         width: auto;
         margin-left: 0;
+        margin-right: 0;
         transform: none;
         grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
@@ -385,6 +434,17 @@
 
       .run-entry {
         transition: none;
+      }
+
+      .embed-wrap,
+      .run-entry.is-watching .embed-wrap,
+      .run-entry.is-watching {
+        transition: none;
+        transform: none;
+      }
+
+      .run-entry.is-watching {
+        transform: translateX(-50%);
       }
     }
   </style>
@@ -1161,7 +1221,6 @@
       }
 
       let activeEntry = null;
-      let observer = null;
 
       function setActiveEntry(entry) {
         if (activeEntry === entry) {
@@ -1179,25 +1238,32 @@
         }
       }
 
-      function centerEntry(entry, forceSmooth = false) {
+      function getViewportHeight() {
+        return window.visualViewport?.height || window.innerHeight;
+      }
+
+      function centerEntryCard(entry, forceSmooth = false) {
         if (!entry) {
           return;
         }
 
         const rect = entry.getBoundingClientRect();
-        const viewportCenter = window.innerHeight / 2;
-        const entryCenter = rect.top + rect.height / 2;
-        if (Math.abs(entryCenter - viewportCenter) < 36) {
+        const viewportCenter = getViewportHeight() / 2;
+        const cardCenter = rect.top + rect.height / 2;
+        const delta = cardCenter - viewportCenter;
+
+        if (Math.abs(delta) < 20) {
           return;
         }
 
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const behavior = (!reduceMotion && forceSmooth) ? 'smooth' : 'auto';
+        const currentY = window.scrollY || window.pageYOffset;
+        const targetY = Math.max(0, currentY + delta);
 
-        entry.scrollIntoView({
-          behavior,
-          block: 'center',
-          inline: 'nearest'
+        window.scrollTo({
+          top: targetY,
+          behavior
         });
       }
 
@@ -1251,6 +1317,57 @@
         });
       }
 
+      function playYouTubeFrame(iframe) {
+        const payloadObj = {
+          event: 'command',
+          func: 'playVideo',
+          args: []
+        };
+        const payloadText = JSON.stringify(payloadObj);
+        const targetOrigins = ['https://www.youtube.com', 'https://www.youtube-nocookie.com', '*'];
+
+        targetOrigins.forEach((origin) => {
+          try {
+            iframe.contentWindow?.postMessage(payloadObj, origin);
+            iframe.contentWindow?.postMessage(payloadText, origin);
+          } catch (_) {
+            // Ignore and let the iframe's normal playback controls continue.
+          }
+        });
+      }
+
+      function startPlaybackInEntry(entry) {
+        const frame = entry?.querySelector('.embed-wrap iframe');
+        if (!frame) {
+          return;
+        }
+
+        if (isYouTubeEmbed(frame)) {
+          try {
+            const url = new URL(frame.getAttribute('src') || '', window.location.origin);
+            if (url.searchParams.get('autoplay') !== '1') {
+              url.searchParams.set('autoplay', '1');
+              frame.src = url.toString();
+            }
+          } catch (_) {
+            // Ignore malformed URLs and still try the player API below.
+          }
+
+          playYouTubeFrame(frame);
+          return;
+        }
+
+        try {
+          const url = new URL(frame.getAttribute('src') || '', window.location.origin);
+          if (url.hostname.includes('twitch.tv') && url.searchParams.get('autoplay') !== 'true') {
+            url.searchParams.set('autoplay', 'true');
+            frame.src = url.toString();
+          }
+        } catch (_) {
+          // Ignore malformed URLs and leave the existing player state intact.
+        }
+      }
+
       function stopPlaybackInOtherEntries(currentEntry) {
         if (!currentEntry) {
           return;
@@ -1271,10 +1388,30 @@
 
           if (isYouTubeEmbed(frame)) {
             pauseYouTubeFrame(frame);
+            try {
+              const url = new URL(src, window.location.origin);
+              if (url.searchParams.has('autoplay')) {
+                url.searchParams.set('autoplay', '0');
+                frame.src = url.toString();
+              }
+            } catch (_) {
+              // Ignore malformed URLs after sending the player pause command.
+            }
             return;
           }
 
-          // Twitch/other embeds: use a hard stop so only one run plays at a time.
+          // Twitch/other embeds: reload with autoplay disabled so only one run plays.
+          try {
+            const url = new URL(src, window.location.origin);
+            if (url.hostname.includes('twitch.tv')) {
+              url.searchParams.set('autoplay', 'false');
+              frame.src = url.toString();
+              return;
+            }
+          } catch (_) {
+            // Fall through to a hard reload for unsupported/malformed embed URLs.
+          }
+
           frame.src = src;
         });
       }
@@ -1289,16 +1426,71 @@
           return;
         }
 
-        setActiveEntry(entry);
-        centerEntry(entry, true);
+        centerEntryCard(entry, true);
+      }
+
+      function centerAfterWatchingLayout(entry) {
+        if (!entry) {
+          return;
+        }
+
+        // Re-center after the expanded layout has been applied.
+        requestAnimationFrame(() => {
+          centerEntryCard(entry, true);
+          requestAnimationFrame(() => {
+            centerEntryCard(entry, true);
+          });
+        });
+
+        // Some embeds resize after layout/paint; re-center once those settle.
+        window.setTimeout(() => centerEntryCard(entry, true), 140);
+        window.setTimeout(() => centerEntryCard(entry, true), 320);
+      }
+
+      function animateVideoExpansion(entry, fromRect) {
+        const media = entry?.querySelector('.embed-wrap');
+        if (!media || !fromRect || fromRect.width <= 0 || fromRect.height <= 0) {
+          return;
+        }
+
+        requestAnimationFrame(() => {
+          const toRect = media.getBoundingClientRect();
+          if (toRect.width <= 0 || toRect.height <= 0) {
+            return;
+          }
+
+          const translateX = fromRect.left - toRect.left;
+          const translateY = fromRect.top - toRect.top;
+          const scaleX = fromRect.width / toRect.width;
+          const scaleY = fromRect.height / toRect.height;
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+          media.getAnimations().forEach((animation) => animation.cancel());
+          media.animate([
+            {
+              transformOrigin: 'top left',
+              transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
+            },
+            {
+              transformOrigin: 'top left',
+              transform: 'translate(0, 0) scale(1, 1)'
+            }
+          ], {
+            duration: reduceMotion ? 0 : 480,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            fill: 'none'
+          });
+        });
       }
 
       let watchingEntry = null;
 
       function setWatchingEntry(entry) {
         if (watchingEntry === entry) {
-          return;
+          return null;
         }
+
+        const fromRect = entry?.querySelector('.embed-wrap')?.getBoundingClientRect() || null;
 
         if (watchingEntry) {
           watchingEntry.classList.remove('is-watching');
@@ -1309,68 +1501,86 @@
         if (watchingEntry) {
           watchingEntry.classList.add('is-watching');
         }
+
+        updateEmbedActivationLayers();
+
+        return fromRect;
       }
 
-      let lastPlaybackSwitchAt = 0;
+      function updateEmbedActivationLayers() {
+        [...runsMain.querySelectorAll('.run-entry')].forEach((entry) => {
+          const wrap = entry.querySelector('.embed-wrap');
+          if (!wrap) {
+            return;
+          }
+
+          const existingLayer = wrap.querySelector('.embed-activate-layer');
+          if (entry === watchingEntry || entry.style.display === 'none') {
+            if (existingLayer) {
+              existingLayer.remove();
+            }
+            return;
+          }
+
+          if (existingLayer) {
+            return;
+          }
+
+          const layer = document.createElement('button');
+          layer.type = 'button';
+          layer.className = 'embed-activate-layer';
+          layer.setAttribute('aria-label', 'Play this run');
+          layer.addEventListener('click', () => {
+            switchPlaybackFromIntentTarget(entry);
+          });
+          wrap.appendChild(layer);
+        });
+      }
+
       function switchPlaybackFromIntentTarget(target) {
         if (!(target instanceof Element)) {
           return;
         }
-
-        const now = Date.now();
-        if (now - lastPlaybackSwitchAt < 110) {
-          return;
-        }
-        lastPlaybackSwitchAt = now;
 
         const entry = target.closest('.run-entry');
         if (!entry || entry.style.display === 'none') {
           return;
         }
 
-        setWatchingEntry(entry);
+        setActiveEntry(entry);
+        const previousMediaRect = setWatchingEntry(entry);
         stopPlaybackInOtherEntries(entry);
+        startPlaybackInEntry(entry);
+        animateVideoExpansion(entry, previousMediaRect);
+        centerAfterWatchingLayout(entry);
+      }
+
+      function activateRunEntryFromTarget(target) {
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const entry = target.closest('.run-entry');
+        if (!entry || entry.style.display === 'none') {
+          return;
+        }
+
+        switchPlaybackFromIntentTarget(entry);
       }
 
       function refreshRunObserver() {
-        if (observer) {
-          observer.disconnect();
-        }
-
         const visibleEntries = getVisibleEntries();
         if (!visibleEntries.length) {
           setActiveEntry(null);
           return;
         }
 
-        observer = new IntersectionObserver((entries) => {
-          let bestEntry = null;
-          let bestRatio = 0;
+        if (watchingEntry && watchingEntry.style.display !== 'none') {
+          setActiveEntry(watchingEntry);
+          return;
+        }
 
-          entries.forEach((item) => {
-            if (!item.isIntersecting || item.target.style.display === 'none') {
-              return;
-            }
-
-            if (item.intersectionRatio > bestRatio) {
-              bestRatio = item.intersectionRatio;
-              bestEntry = item.target;
-            }
-          });
-
-          if (bestEntry && bestRatio >= 0.45) {
-            setActiveEntry(bestEntry);
-          }
-        }, {
-          root: null,
-          threshold: [0.25, 0.45, 0.65, 0.85],
-          rootMargin: '-12% 0px -12% 0px'
-        });
-
-        visibleEntries.forEach((entry) => observer.observe(entry));
-
-        const startingEntry = findClosestEntryToViewportCenter(visibleEntries) || visibleEntries[0];
-        setActiveEntry(startingEntry);
+        setActiveEntry(null);
       }
 
       runsMain.addEventListener('click', (event) => {
@@ -1379,17 +1589,46 @@
           return;
         }
 
-        const intentTarget = target.closest('.embed-wrap, .embed-fallback a, .run-event-title, .run-event-game');
-        if (!intentTarget) {
+        activateRunEntryFromTarget(target);
+      });
+
+      let lastPointerEntry = null;
+      let lastPointerClientX = null;
+      let lastPointerClientY = null;
+      let lastPointerAt = 0;
+
+      runsMain.addEventListener('pointermove', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
           return;
         }
 
-        centerFromIntentTarget(intentTarget);
-
-        if (intentTarget.closest('.embed-wrap')) {
-          switchPlaybackFromIntentTarget(intentTarget);
+        const entry = target.closest('.run-entry');
+        if (!entry || entry.style.display === 'none') {
+          return;
         }
-      });
+
+        lastPointerEntry = entry;
+        lastPointerClientX = event.clientX;
+        lastPointerClientY = event.clientY;
+        lastPointerAt = Date.now();
+      }, { passive: true });
+
+      runsMain.addEventListener('pointerover', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const embed = target.closest('.embed-wrap');
+        const entry = embed?.closest('.run-entry');
+        if (!entry || entry.style.display === 'none') {
+          return;
+        }
+
+        lastPointerEntry = entry;
+        lastPointerAt = Date.now();
+      }, { passive: true });
 
       runsMain.addEventListener('pointerdown', (event) => {
         const target = event.target;
@@ -1397,16 +1636,15 @@
           return;
         }
 
-        const intentTarget = target.closest('.embed-wrap, .embed-fallback a, .run-event-title, .run-event-game');
-        if (!intentTarget) {
-          return;
+        const clickedEntry = target.closest('.run-entry');
+        if (clickedEntry && clickedEntry.style.display !== 'none') {
+          lastPointerEntry = clickedEntry;
+          lastPointerClientX = event.clientX;
+          lastPointerClientY = event.clientY;
+          lastPointerAt = Date.now();
         }
 
-        centerFromIntentTarget(intentTarget);
-
-        if (intentTarget.closest('.embed-wrap')) {
-          switchPlaybackFromIntentTarget(intentTarget);
-        }
+        activateRunEntryFromTarget(target);
       }, true);
 
       runsMain.addEventListener('focusin', (event) => {
@@ -1419,61 +1657,42 @@
           return;
         }
 
-        centerFromIntentTarget(target);
-        switchPlaybackFromIntentTarget(target);
+        activateRunEntryFromTarget(target);
       });
-
-      let lastEmbedIntentAt = 0;
-
-      runsMain.addEventListener('pointerover', (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) {
-          return;
-        }
-
-        const wrap = target.closest('.embed-wrap');
-        if (!wrap) {
-          return;
-        }
-
-        const now = Date.now();
-        if (now - lastEmbedIntentAt < 280) {
-          return;
-        }
-
-        lastEmbedIntentAt = now;
-        centerFromIntentTarget(wrap);
-      });
-
-      runsMain.addEventListener('touchstart', (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) {
-          return;
-        }
-
-        const wrap = target.closest('.embed-wrap');
-        if (!wrap) {
-          return;
-        }
-
-        centerFromIntentTarget(wrap);
-      }, { passive: true });
 
       window.addEventListener('blur', () => {
         // Clicking into a cross-origin iframe often blurs the parent window
         // without dispatching a normal click/focus event we can observe.
         window.setTimeout(() => {
+          const now = Date.now();
+
+          if (lastPointerEntry && document.contains(lastPointerEntry) && now - lastPointerAt < 1800) {
+            switchPlaybackFromIntentTarget(lastPointerEntry);
+            return;
+          }
+
           const active = document.activeElement;
-          if (!(active instanceof Element)) {
+          if (active instanceof Element && active.matches('.embed-wrap iframe')) {
+            centerFromIntentTarget(active);
+            switchPlaybackFromIntentTarget(active);
             return;
           }
 
-          if (!active.matches('.embed-wrap iframe')) {
-            return;
+          if (
+            typeof lastPointerClientX === 'number'
+            && typeof lastPointerClientY === 'number'
+            && now - lastPointerAt < 1800
+          ) {
+            const pointerEl = document.elementFromPoint(lastPointerClientX, lastPointerClientY);
+            if (pointerEl instanceof Element) {
+              const pointerEntry = pointerEl.closest('.run-entry');
+              if (pointerEntry && pointerEntry.style.display !== 'none') {
+                switchPlaybackFromIntentTarget(pointerEntry);
+                return;
+              }
+            }
           }
 
-          centerFromIntentTarget(active);
-          switchPlaybackFromIntentTarget(active);
         }, 0);
       });
 
@@ -1496,6 +1715,7 @@
 
       setupTwitchEmbeds();
       ensureYouTubeApiSupport();
+      updateEmbedActivationLayers();
 
       if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
         ownerSignInBtn.addEventListener('click', async () => {
@@ -1552,14 +1772,6 @@
         }
 
         refreshRunObserver();
-
-        if (game) {
-          const visibleEntries = getVisibleEntries();
-          if (visibleEntries.length) {
-            setActiveEntry(visibleEntries[0]);
-            centerEntry(visibleEntries[0], true);
-          }
-        }
       }
 
       // Read from URL on load
