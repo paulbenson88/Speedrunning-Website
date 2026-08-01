@@ -147,14 +147,4 @@ DESCRIPTION:Watch at: https://twitch.tv/exclamation_markyt
 URL:https://twitch.tv/exclamation_markyt
 LOCATION:https://twitch.tv/exclamation_markyt
 END:VEVENT
-BEGIN:VEVENT
-UID:run-r4r26-garden-trills@speedruncalendar
-DTSTAMP:20260801T005639Z
-DTSTART:20260809T235900Z
-DTEND:20260810T002400Z
-SUMMARY:Garden Trills - Running 4 Reels 2026
-DESCRIPTION:Watch at: https://twitch.tv/speedruns4reelhope
-URL:https://twitch.tv/speedruns4reelhope
-LOCATION:https://twitch.tv/speedruns4reelhope
-END:VEVENT
 END:VCALENDAR
