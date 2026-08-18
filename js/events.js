@@ -221,4 +221,31 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Gamers Against Suicide 2026",
+    start: "2026-09-05T19:00:00Z",
+    end: "2026-09-07T06:52:00Z",
+    twitch: "gfhmarathon",
+    url: "https://horaro.net/gfh/gas2026",
+    runs: [
+      {
+        game: "Ollie-Oop",
+        category: "All Missions",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-09-06T21:02:00Z",
+        runId: "gas2026-ollie-oop",
+        runner: "Pbb8",
+      },
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-09-06T16:27:00Z",
+        runId: "gas2026-garden-trills",
+        runner: "Pbb8",
+      },
+    ],
+  },
 ];
