@@ -244,7 +244,6 @@
                 <span class="run-time">${fmtShortDate(runDate)} ${fmtTime(runDate)} <span class="tz-note">(shown in your local timezone)</span></span>
                 <div class="discord-time-block">
                   <button class="discord-time-copy-btn" data-copy="${encodeURIComponent(discordCopyText)}" type="button">Copy for Discord (via Hammertime)</button>
-                  <a class="discord-time-credit" href="https://hammertime.cyou/en" target="_blank" rel="noopener">Timestamp tool by Hammertime</a>
                 </div>
               </div>
               <div class="run-actions">
@@ -592,7 +591,6 @@
               <span class="upcoming-run-state ${runState.className}">${runState.label}</span>
               <div class="discord-time-block">
                 <button class="discord-time-copy-btn" data-copy="${encodeURIComponent(discordCopyText)}" type="button">Copy for Discord (via Hammertime)</button>
-                <a class="discord-time-credit" href="https://hammertime.cyou/en" target="_blank" rel="noopener">Timestamp tool by Hammertime</a>
               </div>
             </div>
             <div class="run-actions">
