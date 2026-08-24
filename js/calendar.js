@@ -618,33 +618,52 @@
     const commKey = runCommentatorKey(ev.name, run);
     const comms = CommentatorManager.getForEvent(commKey);
     const confirmedCount = comms.filter((c) => c.status === "confirmed").length;
+    const askedCount = comms.filter((c) => c.status === "asked").length;
+    const notAskedCount = comms.filter((c) => c.status === "not-asked").length;
     const declinedCount = comms.filter((c) => c.status === "declined").length;
     const totalCount = comms.length;
-    const hasOutreach = comms.some((c) => c.status !== "not-asked");
 
-    if (confirmedCount > 0) {
+    const statusSummary = [
+      [confirmedCount, "confirmed"],
+      [askedCount, "asked"],
+      [notAskedCount, "not asked"],
+      [declinedCount, "declined"],
+    ]
+      .filter(([count]) => count > 0)
+      .map(([count, label]) => `${count} ${label}`)
+      .join(", ");
+
+    if (totalCount === 0) {
+      return {
+        className: "needs-asks",
+        label: "Needs Asks"
+      };
+    }
+
+    if (confirmedCount === totalCount) {
       return {
         className: "ready",
         label: `Ready (${confirmedCount} confirmed)`
       };
     }
 
-    if (hasOutreach) {
-      if (totalCount > 0 && declinedCount === totalCount) {
-        return {
-          className: "declined",
-          label: "Declined"
-        };
-      }
+    if (notAskedCount > 0) {
       return {
-        className: "waiting",
-        label: "Asked / Waiting"
+        className: "needs-asks",
+        label: `Needs Asks (${statusSummary})`
+      };
+    }
+
+    if (declinedCount === totalCount) {
+      return {
+        className: "declined",
+        label: "Declined"
       };
     }
 
     return {
-      className: "needs-asks",
-      label: "Needs Asks"
+      className: "waiting",
+      label: `Asked / Waiting (${statusSummary})`
     };
   }
 
