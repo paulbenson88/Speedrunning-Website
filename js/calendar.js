@@ -364,9 +364,6 @@
   function openCommentatorModal(eventName, gameName) {
     currentModalEvent = eventName;
     currentModalGame = String(gameName || "").trim();
-    if (currentModalGame) {
-      CommentatorManager.applyGamePoolAsConfirmed(currentModalEvent, currentModalGame);
-    }
     modalTitle.textContent = eventName;
     commInput.value = "";
     renderCommentatorList();

@@ -273,23 +273,6 @@ const CommentatorManager = (function () {
     return true;
   }
 
-  /**
-   * For a run/event in a known game, auto-assume outreach is done and mark
-   * saved names as confirmed on this event (including previously declined).
-   */
-  function applyGamePoolAsConfirmed(eventName, gameName) {
-    const names = getForGame(gameName);
-    let changed = 0;
-    for (const name of names) {
-      const added = add(eventName, name, gameName, {
-        status: "confirmed",
-        overwriteStatus: false,
-      });
-      if (added) changed++;
-    }
-    return changed;
-  }
-
   /** Remove a commentator from an event. */
   function remove(eventName, commentatorName) {
     const data = loadAll();
@@ -404,7 +387,6 @@ const CommentatorManager = (function () {
     getForEvent,
     getForGame,
     rememberForGame,
-    applyGamePoolAsConfirmed,
     add,
     remove,
     setStatus,
