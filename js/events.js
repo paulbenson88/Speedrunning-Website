@@ -229,6 +229,15 @@ const MARATHON_EVENTS = [
     url: "https://horaro.net/gfh/gas2026",
     runs: [
       {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT30M",
+        date: "2026-09-06T01:48:00Z",
+        runId: "gas2026-bad-way",
+        runner: "Pbb8",
+      },
+      {
         game: "Ollie-Oop",
         category: "All Missions",
         console: "PC",
