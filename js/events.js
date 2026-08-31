@@ -257,4 +257,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "SCM 2026",
+    start: "2026-09-24T10:00:00Z",
+    end: "2026-09-27T19:21:00Z",
+    twitch: "",
+    url: "https://oengus.io/marathon/scm2026/schedule/main",
+    runs: [
+      {
+        game: "Ollie-Oop",
+        category: "All Missions",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-09-25T23:37:00Z",
+        runId: 54511,
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
