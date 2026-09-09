@@ -275,4 +275,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Go Fish 2026",
+    start: "2026-09-25T17:30:00Z",
+    end: "2026-09-27T19:59:00Z",
+    twitch: "Channel734",
+    url: "https://oengus.io/marathon/gofish2026/schedule/1",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-09-27T16:45:00Z",
+        runId: 54662,
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
