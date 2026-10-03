@@ -320,4 +320,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Breaking the Habit 2026",
+    start: "2026-10-24T13:00:00Z",
+    end: "2026-10-25T04:57:00Z",
+    twitch: "bthcharity",
+    url: "https://oengus.io/marathon/BTH6/schedule/bth6",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-10-24T16:00:00Z",
+        runId: 54938,
+        runner: "pbb8",
+      },
+    ],
+  },
 ];

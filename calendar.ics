@@ -217,4 +217,14 @@ DESCRIPTION:Watch at: https://twitch.tv/speedruns4reelhope
 URL:https://twitch.tv/speedruns4reelhope
 LOCATION:https://twitch.tv/speedruns4reelhope
 END:VEVENT
+BEGIN:VEVENT
+UID:run-54938@speedruncalendar
+DTSTAMP:20261003T144620Z
+DTSTART:20261024T160000Z
+DTEND:20261024T162500Z
+SUMMARY:Garden Trills - Breaking the Habit 2026
+DESCRIPTION:Watch at: https://twitch.tv/bthcharity
+URL:https://twitch.tv/bthcharity
+LOCATION:https://twitch.tv/bthcharity
+END:VEVENT
 END:VCALENDAR
