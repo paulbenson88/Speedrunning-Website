@@ -49,7 +49,7 @@
     }
 
     .owner-auth-controls {
-      display: flex !important;
+      display: none !important;
     }
 
     /* Calendar editing is owner-only (signed-in owner adds body.owner-mode). */
@@ -925,6 +925,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js"></script>
   <script src="../js/owner-auth.js"></script>
+  <script src="../js/owner-corner.js"></script>
   <script>
     (function () {
       const ownerStatusEl = document.getElementById('owner-auth-status');

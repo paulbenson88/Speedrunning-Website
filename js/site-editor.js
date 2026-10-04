@@ -854,4 +854,11 @@
   });
 
   const loadPromise = loadPublishedState();
+
+  if (new URLSearchParams(window.location.search).has("edit")) {
+    window.history.replaceState(null, "", window.location.pathname);
+    window.SpeedrunOwnerAuth.ready.then(() => {
+      if (window.SpeedrunOwnerAuth.getState().isOwner) onLaunch();
+    });
+  }
 })();

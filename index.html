@@ -817,8 +817,6 @@
         <span class="active">Home</span>
         <a href="calendar/">Calendar</a>
         <a href="runs/">Previous Runs</a>
-        <button class="site-editor-launch" id="site-editor-launch" type="button">Edit site</button>
-        <button class="site-editor-launch site-editor-signout hidden" id="site-editor-signout" type="button">Sign out</button>
       </nav>
     </header>
 
@@ -1072,6 +1070,7 @@
   <script src="js/events.js?v=20261004-r2"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/owner-auth.js"></script>
+  <script src="js/owner-corner.js"></script>
   <script>
     (function () {
       const ownerStatusEl = document.getElementById('owner-auth-status');
@@ -1310,6 +1309,6 @@
       window.addEventListener('resize', syncTimelineHeightToSocialCard);
     })();
   </script>
-  <script src="js/site-editor.js?v=20261004-r10"></script>
+  <script src="js/site-editor.js?v=20261004-r11"></script>
 </body>
 </html>
