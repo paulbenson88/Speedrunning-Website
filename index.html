@@ -339,7 +339,6 @@
     }
 
     .side-status,
-    .stream-card,
     .social-card {
       padding: 20px;
       border: 1px solid var(--line);
@@ -350,7 +349,6 @@
     }
 
     .side-status,
-    .stream-card,
     .social-card,
     .hero-left .panel {
       display: flex;
@@ -390,57 +388,12 @@
       color: #ff6d6d;
     }
 
-    .stream-card h2,
-    .social-card h2 {
-      margin-top: 14px;
-      font-size: 1.35rem;
-    }
-
-    .stream-card h2.status-live {
-      color: var(--green);
-    }
-
-    .stream-card h2.status-offline {
-      color: #ff8080;
-    }
-
-    .stream-card h2 a {
-      color: inherit;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(126, 242, 255, 0.35);
-    }
-
-    .stream-card h2 a:hover {
-      color: var(--cyan);
-      border-bottom-color: var(--cyan);
-    }
-
     .side-status p,
-    .stream-card p,
     .social-card p {
       margin-top: 10px;
       color: var(--muted);
       line-height: 1.65;
       font-size: 0.95rem;
-    }
-
-    .stream-card .button {
-      margin-top: 16px;
-      width: 100%;
-    }
-
-    .stream-embed-wrap {
-      margin-top: 16px;
-      aspect-ratio: 16 / 9;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.25);
-    }
-
-    .stream-player-host {
-      width: 100%;
-      height: 100%;
     }
 
     .social-card {
@@ -971,18 +924,6 @@
             </div>
           </section>
 
-          <section class="stream-card" data-site-section="stream" data-editor-section-label="Live stream">
-            <div class="status-pill status-offline" id="stream-status-pill">Stream status</div>
-            <h2 class="status-offline" id="stream-status-heading">Live stream: <a href="https://twitch.tv/pbb8" data-site-link="streamChannelUrl" data-editor-label="Twitch channel URL" target="_blank" rel="noopener">twitch.tv/pbb8</a></h2>
-            <div id="stream-offline">
-              <p data-site-content="offlineDescription" data-editor-label="Offline message">I&apos;m offline right now. Follow on Twitch to get notified when I go live.</p>
-              <a class="button button-primary" href="https://twitch.tv/pbb8" data-site-link="streamFollowUrl" data-editor-label="Follow button URL" target="_blank" rel="noopener" data-site-content="streamFollowLabel">Follow on Twitch</a>
-            </div>
-            <div class="stream-embed-wrap hidden" id="stream-live-wrap">
-              <div id="live-twitch-embed" class="stream-player-host" aria-label="pbb8 live stream"></div>
-            </div>
-          </section>
-
           <section class="social-card" data-site-section="socials" data-editor-section-label="Social links">
             <div class="panel-header">
               <div>
@@ -1099,15 +1040,10 @@
   <script src="js/owner-auth.js"></script>
   <script>
     (function () {
-      const liveWrap = document.getElementById('stream-live-wrap');
-      const offlineWrap = document.getElementById('stream-offline');
-      const host = window.location.hostname || 'localhost';
       const ownerStatusEl = document.getElementById('owner-auth-status');
       const ownerSignInBtn = document.getElementById('owner-signin-btn');
       const ownerSignOutBtn = document.getElementById('owner-signout-btn');
       const timelineScroll = document.getElementById('timeline-scroll');
-      const streamStatusPill = document.getElementById('stream-status-pill');
-      const streamStatusHeading = document.getElementById('stream-status-heading');
       const RUNS_VOD_OVERRIDES_KEY = 'runsPageVodOverridesV1';
 
       function getTimelineEntryKey(entry) {
@@ -1298,17 +1234,6 @@
         timelineScroll.style.height = `${Math.max(260, Math.floor(available))}px`;
       }
 
-      function setStreamStatusAppearance(isLive) {
-        if (streamStatusPill) {
-          streamStatusPill.classList.toggle('status-live', isLive);
-          streamStatusPill.classList.toggle('status-offline', !isLive);
-        }
-        if (streamStatusHeading) {
-          streamStatusHeading.classList.toggle('status-live', isLive);
-          streamStatusHeading.classList.toggle('status-offline', !isLive);
-        }
-      }
-
       function applyOwnerState(state) {
         if (ownerStatusEl) {
           if (state && state.isOwner) {
@@ -1349,46 +1274,6 @@
 
       syncTimelineFromPreviousRuns();
       window.addEventListener('resize', syncTimelineHeightToSocialCard);
-
-      function showOffline() {
-        setStreamStatusAppearance(false);
-        liveWrap.classList.add('hidden');
-        offlineWrap.classList.remove('hidden');
-      }
-
-      function showLive() {
-        setStreamStatusAppearance(true);
-        offlineWrap.classList.add('hidden');
-        liveWrap.classList.remove('hidden');
-      }
-
-      showOffline();
-
-      window.onTwitchEmbedAPIReady = function () {
-        const parentDomains = [host];
-        if (host === 'localhost') parentDomains.push('127.0.0.1');
-        if (host === '127.0.0.1') parentDomains.push('localhost');
-
-        const embed = new Twitch.Embed('live-twitch-embed', {
-          channel: 'pbb8',
-          width: '100%',
-          height: '100%',
-          autoplay: false,
-          parent: parentDomains
-        });
-
-        embed.addEventListener(Twitch.Embed.VIDEO_READY, function () {
-          const player = embed.getPlayer();
-          if (!player) return;
-          player.addEventListener(Twitch.Player.ONLINE, showLive);
-          player.addEventListener(Twitch.Player.OFFLINE, showOffline);
-        });
-      };
-
-      const sdk = document.createElement('script');
-      sdk.src = 'https://embed.twitch.tv/embed/v1.js';
-      sdk.async = true;
-      document.body.appendChild(sdk);
     })();
   </script>
   <script src="js/site-editor.js?v=20261004-r4"></script>
