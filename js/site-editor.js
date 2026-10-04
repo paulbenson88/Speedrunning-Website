@@ -42,8 +42,10 @@
     layout: Object.fromEntries(layoutGroups.map((group) => [
       group.dataset.siteLayout,
       [...group.querySelectorAll(`:scope > ${SECTION_SELECTOR}`)].map((section) => section.dataset.siteSection)
-    ]))
+    ])),
+    sizes: {}
   };
+  const sectionNodes = [...document.querySelectorAll(SECTION_SELECTOR)];
 
   let publishedState = clone(defaultState);
   let draftState = clone(defaultState);
@@ -112,9 +114,74 @@
     }
   }
 
+  function applySizes(sizes) {
+    for (const section of sectionNodes) {
+      const size = sizes[section.dataset.siteSection] || {};
+      section.style.width = size.w ? `${size.w}%` : "";
+      section.style.height = size.h ? `${size.h}px` : "";
+      section.style.overflow = size.h ? "auto" : "";
+      section.style.justifySelf = size.w ? "start" : "";
+    }
+  }
+
   function applyState(state) {
     applyContent(state);
     applyLayout(state.layout);
+    applySizes(state.sizes);
+  }
+
+  function setResizeHandles(enabled) {
+    for (const section of sectionNodes) {
+      section.classList.toggle("site-editor-resizable", enabled);
+      let handle = section.querySelector(":scope > .site-editor-resize-handle");
+      if (enabled && !handle) {
+        handle = document.createElement("button");
+        handle.type = "button";
+        handle.className = "site-editor-resize-handle";
+        handle.title = "Drag to resize (double-click to reset)";
+        handle.setAttribute("aria-label", `Resize ${section.dataset.editorSectionLabel || section.dataset.siteSection}`);
+        section.appendChild(handle);
+      } else if (!enabled && handle) {
+        handle.remove();
+      }
+    }
+  }
+
+  function startResize(event) {
+    const handle = event.target.closest(".site-editor-resize-handle");
+    if (!handle) return;
+    const section = handle.parentElement;
+    const id = section.dataset.siteSection;
+    const parentWidth = section.parentElement.getBoundingClientRect().width;
+    const start = section.getBoundingClientRect();
+    const originX = event.clientX;
+    const originY = event.clientY;
+    event.preventDefault();
+    handle.setPointerCapture(event.pointerId);
+
+    const onMove = (moveEvent) => {
+      const w = Math.min(100, Math.max(20, Math.round(((start.width + moveEvent.clientX - originX) / parentWidth) * 100)));
+      const h = Math.min(3000, Math.max(80, Math.round(start.height + moveEvent.clientY - originY)));
+      draftState.sizes[id] = { w, h };
+      applySizes(draftState.sizes);
+      updateStatus();
+    };
+    const onUp = () => {
+      handle.removeEventListener("pointermove", onMove);
+      handle.removeEventListener("pointerup", onUp);
+      handle.removeEventListener("pointercancel", onUp);
+    };
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onUp);
+    handle.addEventListener("pointercancel", onUp);
+  }
+
+  function resetSize(event) {
+    const handle = event.target.closest(".site-editor-resize-handle");
+    if (!handle) return;
+    delete draftState.sizes[handle.parentElement.dataset.siteSection];
+    applySizes(draftState.sizes);
+    updateStatus();
   }
 
   function normalizeRemoteState(data) {
@@ -142,6 +209,19 @@
           ...new Set(requested.filter((id) => typeof id === "string" && knownIds.has(id))),
           ...defaultState.layout[groupId].filter((id) => !requested.includes(id))
         ];
+      }
+    }
+    if (data.sizes && typeof data.sizes === "object") {
+      for (const section of sectionNodes) {
+        const id = section.dataset.siteSection;
+        const size = data.sizes[id];
+        if (!size || typeof size !== "object") continue;
+        const w = Number(size.w);
+        const h = Number(size.h);
+        const clean = {};
+        if (Number.isFinite(w) && w >= 20 && w <= 100) clean.w = w;
+        if (Number.isFinite(h) && h >= 80 && h <= 3000) clean.h = h;
+        if (clean.w || clean.h) next.sizes[id] = clean;
       }
     }
     return next;
@@ -284,6 +364,7 @@
     previewing = false;
     previewBar.classList.add("hidden");
     setEditingHighlights(true);
+    setResizeHandles(true);
     panel.classList.add("is-open");
     panel.setAttribute("aria-hidden", "false");
     renderEditor();
@@ -294,6 +375,7 @@
     panel.classList.remove("is-open");
     panel.setAttribute("aria-hidden", "true");
     setEditingHighlights(false);
+    setResizeHandles(false);
     previewing = false;
     previewBar.classList.add("hidden");
     launchButton.focus();
@@ -340,6 +422,7 @@
         content: draftState.content,
         links: draftState.links,
         layout: draftState.layout,
+        sizes: draftState.sizes,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ownerState.user?.uid || "owner"
       });
@@ -364,11 +447,14 @@
     }
   });
   closeButton.addEventListener("click", closeEditor);
+  document.addEventListener("pointerdown", startResize);
+  document.addEventListener("dblclick", resetSize);
   publishButton.addEventListener("click", publishChanges);
 
   previewButton.addEventListener("click", () => {
     previewing = true;
     setEditingHighlights(false);
+    setResizeHandles(false);
     panel.classList.remove("is-open");
     panel.setAttribute("aria-hidden", "true");
     previewBar.classList.remove("hidden");
@@ -379,6 +465,7 @@
     if (!previewing) return;
     previewing = false;
     setEditingHighlights(true);
+    setResizeHandles(true);
     previewBar.classList.add("hidden");
     panel.classList.add("is-open");
     panel.setAttribute("aria-hidden", "false");
