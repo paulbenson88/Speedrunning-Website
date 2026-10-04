@@ -748,6 +748,10 @@
     return ((+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0)) * 1000;
   }
 
+  function runWatchUrl(ev, run) {
+    return run.vodUrl || (ev.twitch ? `https://twitch.tv/${ev.twitch}` : "");
+  }
+
   function exportICS() {
     let cal = [
       "BEGIN:VCALENDAR",
@@ -764,14 +768,16 @@
         const start = new Date(run.date);
         const end = new Date(start.getTime() + durationMs(run.estimate));
         const uid = `run-${run.runId}@speedruncalendar`;
+        const watchUrl = runWatchUrl(ev, run);
         cal.push(
           "BEGIN:VEVENT",
           `UID:${uid}`,
           `DTSTART:${icsTimestamp(start)}`,
           `DTEND:${icsTimestamp(end)}`,
           `SUMMARY:${run.game} - ${run.category}`,
-          `DESCRIPTION:${ev.name}\\n${run.category} (${run.console})\\nEstimate: ${fmtEstimate(run.estimate)}`,
-          `LOCATION:${ev.url || ""}`,
+          `DESCRIPTION:${ev.name}\\n${run.category} (${run.console})\\nEstimate: ${fmtEstimate(run.estimate)}${watchUrl ? `\\nWatch at: ${watchUrl}` : ""}`,
+          `URL:${watchUrl}`,
+          `LOCATION:${watchUrl || ev.url || ""}`,
           "END:VEVENT",
         );
       }
@@ -792,7 +798,7 @@
     const start = new Date(run.date);
     const end = new Date(start.getTime() + durationMs(run.estimate));
     const uid = `run-${run.runId}@speedruncalendar`;
-    const twitchUrl = ev.twitch ? `https://twitch.tv/${ev.twitch}` : "";
+    const watchUrl = runWatchUrl(ev, run);
     const cal = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
@@ -805,8 +811,8 @@
       `DTSTART:${icsTimestamp(start)}`,
       `DTEND:${icsTimestamp(end)}`,
       `SUMMARY:${run.game} — ${ev.name}`,
-      `DESCRIPTION:${ev.name}\\nWatch at: ${twitchUrl}`,
-      `URL:${twitchUrl}`,
+      `DESCRIPTION:${ev.name}\\nWatch at: ${watchUrl}`,
+      `URL:${watchUrl}`,
       "END:VEVENT",
       "END:VCALENDAR",
     ];
@@ -824,7 +830,8 @@
     const start = new Date(run.date);
     const end = new Date(start.getTime() + durationMs(run.estimate));
     const title = `${run.game} — ${ev.name}`;
-    const details = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const watchUrl = runWatchUrl(ev, run);
+    const details = watchUrl ? `Watch at ${watchUrl}` : "";
     const p = new URLSearchParams({
       action: "TEMPLATE",
       text: title,
@@ -838,7 +845,8 @@
     const start = new Date(run.date);
     const end = new Date(start.getTime() + durationMs(run.estimate));
     const title = `${run.game} — ${ev.name}`;
-    const body = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const watchUrl = runWatchUrl(ev, run);
+    const body = watchUrl ? `Watch at ${watchUrl}` : "";
     const p = new URLSearchParams({
       rru: "addevent",
       subject: title,
@@ -854,7 +862,8 @@
     const start = new Date(run.date);
     const end = new Date(start.getTime() + durationMs(run.estimate));
     const title = `${run.game} — ${ev.name}`;
-    const desc = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const watchUrl = runWatchUrl(ev, run);
+    const desc = watchUrl ? `Watch at ${watchUrl}` : "";
     const p = new URLSearchParams({
       v: "60",
       title,
@@ -1105,7 +1114,7 @@
       <span class="next-up-time">${fmtShortDate(runDate)} ${fmtTime(runDate)}</span>
       <span class="next-up-countdown">in ${countdown}</span>
       <div class="next-up-actions">
-        ${nextEv.twitch ? `<a class="next-up-watch" href="https://twitch.tv/${nextEv.twitch}" target="_blank" rel="noopener">📺 Watch</a>` : ""}
+        ${runWatchUrl(nextEv, nextRun) ? `<a class="next-up-watch" href="${runWatchUrl(nextEv, nextRun)}" target="_blank" rel="noopener">📺 Watch</a>` : ""}
         ${calDropdownHTML(evIdx, runIdx)}
       </div>
     `;

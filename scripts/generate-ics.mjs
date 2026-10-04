@@ -163,14 +163,15 @@ function baseRunsToFeedEvents(events) {
       const start = new Date(run.date);
       const end = new Date(start.getTime() + durationMs(run.estimate));
       const twitchUrl = ev.twitch ? `https://twitch.tv/${ev.twitch}` : "";
+      const watchUrl = run.vodUrl || twitchUrl;
       out.push({
         uid: `run-${run.runId}@speedruncalendar`,
         start,
         end,
         summary: `${run.game} - ${ev.name}`,
-        description: twitchUrl ? `Watch at: ${twitchUrl}` : ev.name,
-        url: twitchUrl,
-        location: twitchUrl,
+        description: watchUrl ? `Watch at: ${watchUrl}` : ev.name,
+        url: watchUrl,
+        location: watchUrl,
         runnerType: "my-run"
       });
     }
