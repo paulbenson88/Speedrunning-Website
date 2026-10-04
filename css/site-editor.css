@@ -303,3 +303,5 @@
 }
 
 .site-editor-draggable { cursor: move; touch-action: none; user-select: none; }
+
+.site-editor-multiline { white-space: pre-line; }

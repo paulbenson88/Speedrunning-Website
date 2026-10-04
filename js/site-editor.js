@@ -97,7 +97,10 @@
   function applyContent(state) {
     for (const node of contentNodes) {
       const value = state.content[node.dataset.siteContent];
-      if (typeof value === "string") node.textContent = value;
+      if (typeof value === "string") {
+        node.textContent = value;
+        node.classList.toggle("site-editor-multiline", value.includes("\n"));
+      }
     }
     document.title = state.content.pageTitle || document.title;
     for (const node of linkNodes) {
@@ -485,10 +488,11 @@
     label.className = "site-editor-field";
     label.textContent = labelText;
 
-    const field = document.createElement(isLink || value.length <= 90 ? "input" : "textarea");
+    const field = document.createElement(isLink ? "input" : "textarea");
     field.dataset.editorKey = key;
     field.dataset.editorType = isLink ? "link" : "content";
     field.value = value;
+    if (!isLink) field.rows = Math.min(8, Math.max(1, value.split("\n").length, Math.ceil(value.length / 45)));
     field.maxLength = isLink ? 2048 : CONTENT_MAX_LENGTH;
     if (isLink) {
       field.type = "url";
