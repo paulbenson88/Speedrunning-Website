@@ -396,6 +396,29 @@
       font-size: 0.95rem;
     }
 
+    .timeline-vod-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .timeline-vod-note a {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(126, 242, 255, 0.14);
+      border: 1px solid rgba(126, 242, 255, 0.5);
+      color: var(--cyan);
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: background 0.2s ease;
+    }
+
+    .timeline-vod-note a:hover {
+      background: rgba(126, 242, 255, 0.28);
+    }
+
     .social-card {
       padding: 14px 16px;
     }
@@ -812,7 +835,7 @@
             <div class="panel-header">
               <div>
                 <h2 data-site-content="timelineTitle" data-editor-label="Timeline heading">Marathon History Timeline</h2>
-                <p class="timeline-vod-note">To watch VODs of these runs, <a href="runs/" data-site-link="timelineVodsUrl" data-editor-label="VODs link (click here)">click here</a>!</p>
+                <p class="timeline-vod-note">To watch VODs of these runs: <a href="runs/" data-site-link="timelineVodsUrl" data-editor-label="VODs link (click here)">Click here to open Previous Runs &rarr;</a></p>
               </div>
             </div>
             <div class="timeline">
