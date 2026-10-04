@@ -7,6 +7,7 @@
   const LAYOUT_SELECTOR = "[data-site-layout]";
   const CONTENT_MAX_LENGTH = 2000;
   const SNAP_DISTANCE = 8;
+  const STANDARD_GAP = 20;
   const OFFSET_MIN_VIEWPORT = 900;
   const GROUP_LABELS = {
     "hero-left": "Introduction and history",
@@ -191,11 +192,21 @@
       if (!e.altKey) {
         const xs = [start.left, start.left + start.width / 2, start.right];
         const ys = [start.top, start.top + start.height / 2, start.bottom];
-        const xSnap = bestSnap(others.flatMap((o) => {
+        const overlapsX = (o) => start.left + dx < o.rect.right && start.right + dx > o.rect.left;
+        const overlapsY = (o) => start.top + dy < o.rect.bottom && start.bottom + dy > o.rect.top;
+        const gapY = bestSnap(others.filter(overlapsX).flatMap((o) => [
+          { delta: o.rect.bottom + STANDARD_GAP - (start.top + dy), line: o.rect.bottom + STANDARD_GAP / 2, note: `Standard ${STANDARD_GAP}px gap below ${o.label}` },
+          { delta: o.rect.top - STANDARD_GAP - (start.bottom + dy), line: o.rect.top - STANDARD_GAP / 2, note: `Standard ${STANDARD_GAP}px gap above ${o.label}` }
+        ]));
+        const gapX = bestSnap(others.filter(overlapsY).flatMap((o) => [
+          { delta: o.rect.right + STANDARD_GAP - (start.left + dx), line: o.rect.right + STANDARD_GAP / 2, note: `Standard ${STANDARD_GAP}px gap right of ${o.label}` },
+          { delta: o.rect.left - STANDARD_GAP - (start.right + dx), line: o.rect.left - STANDARD_GAP / 2, note: `Standard ${STANDARD_GAP}px gap left of ${o.label}` }
+        ]));
+        const xSnap = gapX || bestSnap(others.flatMap((o) => {
           const targets = [[o.rect.left, "left edge"], [o.rect.left + o.rect.width / 2, "center"], [o.rect.right, "right edge"]];
           return xs.flatMap((x, i) => targets.map(([target, name]) => ({ delta: target - (x + dx), line: target, note: `Aligned with ${name} of ${o.label}` })));
         }));
-        const ySnap = bestSnap(others.flatMap((o) => {
+        const ySnap = gapY || bestSnap(others.flatMap((o) => {
           const targets = [[o.rect.top, "top"], [o.rect.top + o.rect.height / 2, "middle"], [o.rect.bottom, "bottom"]];
           return ys.flatMap((y) => targets.map(([target, name]) => ({ delta: target - (y + dy), line: target, note: `Aligned with ${name} of ${o.label}` })));
         }));
