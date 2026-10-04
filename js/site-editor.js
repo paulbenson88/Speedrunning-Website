@@ -7,6 +7,7 @@
   const LAYOUT_SELECTOR = "[data-site-layout]";
   const CONTENT_MAX_LENGTH = 2000;
   const SNAP_DISTANCE = 8;
+  const OFFSET_MIN_VIEWPORT = 900;
   const GROUP_LABELS = {
     "hero-left": "Introduction and history",
     "hero-side": "About, stream, and socials",
@@ -44,7 +45,9 @@
       group.dataset.siteLayout,
       [...group.querySelectorAll(`:scope > ${SECTION_SELECTOR}`)].map((section) => section.dataset.siteSection)
     ])),
-    sizes: {}
+    sizes: {},
+    offsets: {},
+    padding: {}
   };
   const sectionNodes = [...document.querySelectorAll(SECTION_SELECTOR)];
 
@@ -125,10 +128,103 @@
     }
   }
 
+  function applyOffsets(state) {
+    const enabled = window.innerWidth >= OFFSET_MIN_VIEWPORT;
+    for (const section of sectionNodes) {
+      const id = section.dataset.siteSection;
+      const offset = (enabled && state.offsets[id]) || {};
+      section.style.marginTop = offset.y ? `${offset.y}px` : "";
+      section.style.left = offset.x ? `${offset.x}px` : "";
+      if (offset.x) section.style.position = "relative";
+      else if (!section.classList.contains("site-editor-resizable")) section.style.position = "";
+      const pad = state.padding[id];
+      section.style.padding = Number.isFinite(pad) ? `${pad}px` : "";
+    }
+  }
+
   function applyState(state) {
     applyContent(state);
     applyLayout(state.layout);
     applySizes(state.sizes);
+    applyOffsets(state);
+  }
+
+  window.addEventListener("resize", () => applyOffsets(draftState));
+
+  function startMove(event) {
+    const grip = event.target.closest(".site-editor-move-handle");
+    if (!grip || window.innerWidth < OFFSET_MIN_VIEWPORT) return;
+    const section = grip.parentElement;
+    const id = section.dataset.siteSection;
+    const start = section.getBoundingClientRect();
+    const base = draftState.offsets[id] || { x: 0, y: 0 };
+    const originX = event.clientX;
+    const originY = event.clientY;
+    const others = sectionNodes
+      .filter((node) => node !== section && node.offsetParent !== null)
+      .map((node) => ({ rect: node.getBoundingClientRect(), label: node.dataset.editorSectionLabel || node.dataset.siteSection }));
+    event.preventDefault();
+    grip.setPointerCapture(event.pointerId);
+    const guideV = document.createElement("div");
+    const guideH = document.createElement("div");
+    const readout = document.createElement("div");
+    guideV.className = "site-editor-guide is-vertical";
+    guideH.className = "site-editor-guide is-horizontal";
+    readout.className = "site-editor-readout";
+    document.body.append(guideV, guideH, readout);
+
+    const bestSnap = (candidates) => {
+      let best = null;
+      for (const c of candidates) {
+        const d = Math.abs(c.delta);
+        if (d <= SNAP_DISTANCE && (!best || d < Math.abs(best.delta))) best = c;
+      }
+      return best;
+    };
+
+    const onMove = (e) => {
+      let dx = e.clientX - originX;
+      let dy = e.clientY - originY;
+      const notes = [];
+      guideV.style.display = "none";
+      guideH.style.display = "none";
+      if (!e.altKey) {
+        const xs = [start.left, start.left + start.width / 2, start.right];
+        const ys = [start.top, start.top + start.height / 2, start.bottom];
+        const xSnap = bestSnap(others.flatMap((o) => {
+          const targets = [[o.rect.left, "left edge"], [o.rect.left + o.rect.width / 2, "center"], [o.rect.right, "right edge"]];
+          return xs.flatMap((x, i) => targets.map(([target, name]) => ({ delta: target - (x + dx), line: target, note: `Aligned with ${name} of ${o.label}` })));
+        }));
+        const ySnap = bestSnap(others.flatMap((o) => {
+          const targets = [[o.rect.top, "top"], [o.rect.top + o.rect.height / 2, "middle"], [o.rect.bottom, "bottom"]];
+          return ys.flatMap((y) => targets.map(([target, name]) => ({ delta: target - (y + dy), line: target, note: `Aligned with ${name} of ${o.label}` })));
+        }));
+        if (xSnap) { dx += xSnap.delta; notes.push(xSnap.note); guideV.style.cssText = `display:block;left:${xSnap.line}px`; }
+        if (ySnap) { dy += ySnap.delta; notes.push(ySnap.note); guideH.style.cssText = `display:block;top:${ySnap.line}px`; }
+        if (!ySnap && Math.abs(base.y + dy) <= SNAP_DISTANCE) { dy = -base.y; notes.push("Default spacing"); }
+        if (!xSnap && Math.abs(base.x + dx) <= SNAP_DISTANCE) { dx = -base.x; notes.push("Default position"); }
+      }
+      const x = Math.max(-1200, Math.min(1200, Math.round(base.x + dx)));
+      const y = Math.max(-1200, Math.min(1200, Math.round(base.y + dy)));
+      if (x || y) draftState.offsets[id] = { x, y };
+      else delete draftState.offsets[id];
+      applyOffsets(draftState);
+      readout.textContent = [`x ${x}px, y ${y}px`, ...notes].join(" · ");
+      readout.style.left = `${Math.min(window.innerWidth - 300, e.clientX + 14)}px`;
+      readout.style.top = `${e.clientY + 14}px`;
+      updateStatus();
+    };
+    const onUp = () => {
+      guideV.remove();
+      guideH.remove();
+      readout.remove();
+      grip.removeEventListener("pointermove", onMove);
+      grip.removeEventListener("pointerup", onUp);
+      grip.removeEventListener("pointercancel", onUp);
+    };
+    grip.addEventListener("pointermove", onMove);
+    grip.addEventListener("pointerup", onUp);
+    grip.addEventListener("pointercancel", onUp);
   }
 
   function setResizeHandles(enabled) {
@@ -144,6 +240,18 @@
         section.appendChild(handle);
       } else if (!enabled && handle) {
         handle.remove();
+      }
+      let grip = section.querySelector(":scope > .site-editor-move-handle");
+      if (enabled && !grip) {
+        grip = document.createElement("button");
+        grip.type = "button";
+        grip.className = "site-editor-move-handle";
+        grip.textContent = "✥ Move";
+        grip.title = "Drag to move this box (double-click to reset position)";
+        grip.setAttribute("aria-label", `Move ${section.dataset.editorSectionLabel || section.dataset.siteSection}`);
+        section.appendChild(grip);
+      } else if (!enabled && grip) {
+        grip.remove();
       }
     }
   }
@@ -234,6 +342,13 @@
   }
 
   function resetSize(event) {
+    const grip = event.target.closest(".site-editor-move-handle");
+    if (grip) {
+      delete draftState.offsets[grip.parentElement.dataset.siteSection];
+      applyOffsets(draftState);
+      updateStatus();
+      return;
+    }
     const handle = event.target.closest(".site-editor-resize-handle");
     if (!handle) return;
     delete draftState.sizes[handle.parentElement.dataset.siteSection];
@@ -280,6 +395,15 @@
         if (Number.isFinite(h) && h >= 80 && h <= 3000) clean.h = h;
         if (clean.w || clean.h) next.sizes[id] = clean;
       }
+    }
+    for (const section of sectionNodes) {
+      const id = section.dataset.siteSection;
+      const o = data.offsets && data.offsets[id];
+      if (o && Number.isFinite(Number(o.x)) && Number.isFinite(Number(o.y)) && Math.abs(o.x) <= 1200 && Math.abs(o.y) <= 1200 && (o.x || o.y)) {
+        next.offsets[id] = { x: Number(o.x), y: Number(o.y) };
+      }
+      const p = data.padding && Number(data.padding[id]);
+      if (data.padding && data.padding[id] !== undefined && Number.isFinite(p) && p >= 0 && p <= 120) next.padding[id] = p;
     }
     return next;
   }
@@ -373,6 +497,24 @@
     for (const node of linkNodes) {
       const key = node.dataset.siteLink;
       addEditorField(node.dataset.editorLabel || key, key, draftState.links[key], true);
+    }
+    const spacing = document.createElement("h3");
+    spacing.textContent = "Box padding (px, blank = default)";
+    fieldsForm.appendChild(spacing);
+    for (const section of sectionNodes) {
+      const id = section.dataset.siteSection;
+      const label = document.createElement("label");
+      label.className = "site-editor-field";
+      label.textContent = section.dataset.editorSectionLabel || id;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      input.max = "120";
+      input.step = "4";
+      input.dataset.paddingFor = id;
+      input.value = Number.isFinite(draftState.padding[id]) ? draftState.padding[id] : "";
+      label.appendChild(input);
+      fieldsForm.appendChild(label);
     }
   }
 
@@ -480,6 +622,8 @@
         links: draftState.links,
         layout: draftState.layout,
         sizes: draftState.sizes,
+        offsets: draftState.offsets,
+        padding: draftState.padding,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedBy: ownerState.user?.uid || "owner"
       });
@@ -505,6 +649,7 @@
   });
   closeButton.addEventListener("click", closeEditor);
   document.addEventListener("pointerdown", startResize);
+  document.addEventListener("pointerdown", startMove);
   document.addEventListener("dblclick", resetSize);
   publishButton.addEventListener("click", publishChanges);
 
@@ -537,6 +682,15 @@
   });
 
   fieldsForm.addEventListener("input", (event) => {
+    const paddingField = event.target.closest("[data-padding-for]");
+    if (paddingField) {
+      const value = paddingField.value === "" ? NaN : Math.max(0, Math.min(120, Number(paddingField.value)));
+      if (Number.isFinite(value)) draftState.padding[paddingField.dataset.paddingFor] = value;
+      else delete draftState.padding[paddingField.dataset.paddingFor];
+      applyOffsets(draftState);
+      updateStatus();
+      return;
+    }
     const field = event.target.closest("[data-editor-key]");
     if (!field) return;
     const key = field.dataset.editorKey;
