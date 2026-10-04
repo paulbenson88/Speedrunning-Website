@@ -647,6 +647,59 @@
       window.alert(`Could not sign out. ${error.message}`);
     }
   });
+  const PANEL_POSITION_KEY = "siteEditorPanelPosition";
+  const panelHeader = panel.querySelector(".site-editor-header");
+  const canMovePanel = () => window.innerWidth > 700;
+
+  function placePanel(left, top) {
+    const rect = panel.getBoundingClientRect();
+    const x = Math.min(Math.max(0, left), Math.max(0, window.innerWidth - Math.min(rect.width, 120)));
+    const y = Math.min(Math.max(0, top), Math.max(0, window.innerHeight - 48));
+    panel.style.inset = `${y}px auto auto ${x}px`;
+    panel.style.maxHeight = `${Math.max(200, window.innerHeight - y - 8)}px`;
+    return { x, y };
+  }
+
+  function resetPanelPosition() {
+    panel.style.inset = "";
+    panel.style.maxHeight = "";
+    try { localStorage.removeItem(PANEL_POSITION_KEY); } catch {}
+  }
+
+  function restorePanelPosition() {
+    if (!canMovePanel()) return resetPanelPosition();
+    try {
+      const saved = JSON.parse(localStorage.getItem(PANEL_POSITION_KEY) || "null");
+      if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) placePanel(saved.x, saved.y);
+    } catch {}
+  }
+
+  panelHeader.classList.add("site-editor-draggable");
+  panelHeader.title = "Drag to move this panel (double-click to reset)";
+  panelHeader.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("button") || !canMovePanel()) return;
+    const rect = panel.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+    event.preventDefault();
+    panelHeader.setPointerCapture(event.pointerId);
+    let last = { x: rect.left, y: rect.top };
+    const onMove = (e) => { last = placePanel(e.clientX - offsetX, e.clientY - offsetY); };
+    const onUp = () => {
+      panelHeader.removeEventListener("pointermove", onMove);
+      panelHeader.removeEventListener("pointerup", onUp);
+      panelHeader.removeEventListener("pointercancel", onUp);
+      try { localStorage.setItem(PANEL_POSITION_KEY, JSON.stringify(last)); } catch {}
+    };
+    panelHeader.addEventListener("pointermove", onMove);
+    panelHeader.addEventListener("pointerup", onUp);
+    panelHeader.addEventListener("pointercancel", onUp);
+  });
+  panelHeader.addEventListener("dblclick", (event) => {
+    if (!event.target.closest("button")) resetPanelPosition();
+  });
+  window.addEventListener("resize", restorePanelPosition);
+  restorePanelPosition();
   closeButton.addEventListener("click", closeEditor);
   document.addEventListener("pointerdown", startResize);
   document.addEventListener("pointerdown", startMove);

@@ -301,3 +301,5 @@
   position: absolute; top: 2px; left: 2px; z-index: 5; padding: 2px 8px; border: 0; border-radius: 4px;
   background: #7c5cff; color: #fff; font: 600 12px/1.4 system-ui, sans-serif; cursor: move; touch-action: none;
 }
+
+.site-editor-draggable { cursor: move; touch-action: none; user-select: none; }
