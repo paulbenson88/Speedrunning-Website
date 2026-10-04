@@ -19,8 +19,7 @@
   }
 
   function computeIsOwner(authUser) {
-    if (!authUser) return false;
-    if (!ownerConfigured()) return true;
+    if (!authUser || !ownerConfigured()) return false;
     const email = String(authUser.email || "").trim().toLowerCase();
     const uid = String(authUser.uid || "").trim();
     if (uid && OWNER_UIDS.includes(uid)) return true;

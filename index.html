@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pbb8's Speedrun Hub</title>
+  <title data-site-content="pageTitle" data-editor-label="Browser tab title">pbb8's Speedrun Hub</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site-editor.css" />
   <style>
     :root {
       --bg: #0a0d14;
@@ -820,17 +821,19 @@
         <span class="active">Home</span>
         <a href="calendar/">Calendar</a>
         <a href="runs/">Previous Runs</a>
+        <button class="site-editor-launch" id="site-editor-launch" type="button">Edit site</button>
+        <button class="site-editor-launch site-editor-signout hidden" id="site-editor-signout" type="button">Sign out</button>
       </nav>
     </header>
 
     <main>
       <section class="hero">
-        <div class="hero-left">
-          <div class="hero-main">
+        <div class="hero-left" data-site-layout="hero-left">
+          <div class="hero-main" data-site-section="hero-intro" data-editor-section-label="Introduction">
             <div class="hero-main-layout">
               <div class="hero-copy-block">
-                <h1>Hey, I&apos;m Paul. This is my little corner of speedrunning.</h1>
-                <p class="hero-copy">I made this site to keep my marathon runs, schedule, and VOD links in one place. :)</p>
+            <h1 data-site-content="heroTitle" data-editor-label="Introduction heading">Hey, I&apos;m Paul. This is my little corner of speedrunning.</h1>
+            <p class="hero-copy" data-site-content="heroDescription" data-editor-label="Introduction text">I made this site to keep my marathon runs, schedule, and VOD links in one place. :)</p>
               </div>
               <div class="hero-avatar-card">
                 <img src="assets/illustrations/paul-avatar.png" alt="Illustrated portrait of Paul" />
@@ -838,11 +841,11 @@
             </div>
           </div>
 
-          <article class="panel">
+          <article class="panel" data-site-section="timeline" data-editor-section-label="Marathon history">
             <div class="panel-header">
               <div>
-                <h2>Marathon History Timeline</h2>
-                <p>Past marathons I&apos;ve been part of.</p>
+                <h2 data-site-content="timelineTitle" data-editor-label="Timeline heading">Marathon History Timeline</h2>
+                <p data-site-content="timelineDescription" data-editor-label="Timeline description">Past marathons I&apos;ve been part of.</p>
               </div>
             </div>
             <div class="timeline">
@@ -941,52 +944,52 @@
           </article>
         </div>
 
-        <aside class="hero-side">
-          <section class="side-status">
+        <aside class="hero-side" data-site-layout="hero-side">
+          <section class="side-status" data-site-section="about" data-editor-section-label="About me">
             <div class="panel-header">
               <div class="card-copy">
-                <h2>About Me</h2>
-                <p>I&apos;m a licensed therapist in Minnesota, plus husband and dad.</p>
-                <p>When I&apos;m not working or with family, I put time into speedrunning, marathons, and occasional streams.</p>
-                <p>If you ever have a question about me, the stream, or a run, just ask.</p>
+                <h2 data-site-content="aboutTitle" data-editor-label="About heading">About Me</h2>
+                <p data-site-content="aboutParagraph1" data-editor-label="About paragraph 1">I&apos;m a licensed therapist in Minnesota, plus husband and dad.</p>
+                <p data-site-content="aboutParagraph2" data-editor-label="About paragraph 2">When I&apos;m not working or with family, I put time into speedrunning, marathons, and occasional streams.</p>
+                <p data-site-content="aboutParagraph3" data-editor-label="About paragraph 3">If you ever have a question about me, the stream, or a run, just ask.</p>
               </div>
             </div>
           </section>
 
-          <section class="stream-card">
+          <section class="stream-card" data-site-section="stream" data-editor-section-label="Live stream">
             <div class="status-pill status-offline" id="stream-status-pill">Stream status</div>
-            <h2 class="status-offline" id="stream-status-heading">Live stream: <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">twitch.tv/pbb8</a></h2>
+            <h2 class="status-offline" id="stream-status-heading">Live stream: <a href="https://twitch.tv/pbb8" data-site-link="streamChannelUrl" data-editor-label="Twitch channel URL" target="_blank" rel="noopener">twitch.tv/pbb8</a></h2>
             <div id="stream-offline">
-              <p>I&apos;m offline right now. Follow on Twitch to get notified when I go live.</p>
-              <a class="button button-primary" href="https://twitch.tv/pbb8" target="_blank" rel="noopener">Follow on Twitch</a>
+              <p data-site-content="offlineDescription" data-editor-label="Offline message">I&apos;m offline right now. Follow on Twitch to get notified when I go live.</p>
+              <a class="button button-primary" href="https://twitch.tv/pbb8" data-site-link="streamFollowUrl" data-editor-label="Follow button URL" target="_blank" rel="noopener" data-site-content="streamFollowLabel">Follow on Twitch</a>
             </div>
             <div class="stream-embed-wrap hidden" id="stream-live-wrap">
               <div id="live-twitch-embed" class="stream-player-host" aria-label="pbb8 live stream"></div>
             </div>
           </section>
 
-          <section class="social-card">
+          <section class="social-card" data-site-section="socials" data-editor-section-label="Social links">
             <div class="panel-header">
               <div>
-                <h2>Socials</h2>
-                <p>Places to find stream updates, VODs, and other stuff.</p>
+                <h2 data-site-content="socialsTitle" data-editor-label="Socials heading">Socials</h2>
+                <p data-site-content="socialsDescription" data-editor-label="Socials description">Places to find stream updates, VODs, and other stuff.</p>
               </div>
             </div>
             <div class="social-stack">
-              <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener">
-                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 3h16v11l-4 4h-4l-3 3v-3H4z" fill="currentColor"></path><path d="M10 8h2v5h-2zm4 0h2v5h-2z" fill="#0d1220"></path></svg></div> Twitch</div>
+              <a href="https://twitch.tv/pbb8" data-site-link="socialTwitchUrl" data-editor-label="Twitch social URL" target="_blank" rel="noopener">
+                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 3h16v11l-4 4h-4l-3 3v-3H4z" fill="currentColor"></path><path d="M10 8h2v5h-2zm4 0h2v5h-2z" fill="#0d1220"></path></svg></div> <span data-site-content="socialTwitchLabel" data-editor-label="Twitch social label">Twitch</span></div>
               </a>
-              <a href="https://www.youtube.com/channel/UC88HGMfjFeXN_DbXf1tXMJQ" target="_blank" rel="noopener">
-                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.5" y="5.5" width="19" height="13" rx="4" fill="currentColor"></rect><path d="M10 9.25 15.5 12 10 14.75z" fill="#0d1220"></path></svg></div> YouTube</div>
+              <a href="https://www.youtube.com/channel/UC88HGMfjFeXN_DbXf1tXMJQ" data-site-link="socialYoutubeUrl" data-editor-label="YouTube social URL" target="_blank" rel="noopener">
+                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.5" y="5.5" width="19" height="13" rx="4" fill="currentColor"></rect><path d="M10 9.25 15.5 12 10 14.75z" fill="#0d1220"></path></svg></div> <span data-site-content="socialYoutubeLabel" data-editor-label="YouTube social label">YouTube</span></div>
               </a>
-              <a href="https://www.instagram.com/pbb8.tv" target="_blank" rel="noopener">
-                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"></rect><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"></circle></svg></div> Instagram</div>
+              <a href="https://www.instagram.com/pbb8.tv" data-site-link="socialInstagramUrl" data-editor-label="Instagram social URL" target="_blank" rel="noopener">
+                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"></rect><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"></circle></svg></div> <span data-site-content="socialInstagramLabel" data-editor-label="Instagram social label">Instagram</span></div>
               </a>
-              <a href="https://www.tiktok.com/@paul_benson" target="_blank" rel="noopener">
-                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3c.6 2 1.8 3.3 4 3.9v2.8c-1.6-.1-2.9-.6-4-1.4v6.6a5 5 0 1 1-5-5c.4 0 .8.1 1.2.2v3a2.2 2.2 0 1 0 1.8 2.2V3z" fill="currentColor"></path></svg></div> TikTok</div>
+              <a href="https://www.tiktok.com/@paul_benson" data-site-link="socialTiktokUrl" data-editor-label="TikTok social URL" target="_blank" rel="noopener">
+                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3c.6 2 1.8 3.3 4 3.9v2.8c-1.6-.1-2.9-.6-4-1.4v6.6a5 5 0 1 1-5-5c.4 0 .8.1 1.2.2v3a2.2 2.2 0 1 0 1.8 2.2V3z" fill="currentColor"></path></svg></div> <span data-site-content="socialTiktokLabel" data-editor-label="TikTok social label">TikTok</span></div>
               </a>
-              <a href="https://discord.gg/5FywUCH" target="_blank" rel="noopener">
-                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7.5A14 14 0 0 1 10.3 6l.4.8a9.7 9.7 0 0 1 2.6 0l.4-.8A14 14 0 0 1 17 7.5c1.7 2.4 2.2 4.7 2 7-1.2.9-2.4 1.5-3.7 1.9l-.8-1.3c.7-.2 1.3-.5 1.9-.9-.2.2-.4.3-.6.4-1.2.6-2.4.9-3.8.9s-2.6-.3-3.8-.9c-.2-.1-.4-.2-.6-.4.6.4 1.2.7 1.9.9l-.8 1.3C7.4 16.2 6.2 15.6 5 14.7c-.2-2.3.3-4.6 2-7.2Z" fill="currentColor"></path><circle cx="9.8" cy="11.9" r="1.1" fill="#0d1220"></circle><circle cx="14.2" cy="11.9" r="1.1" fill="#0d1220"></circle></svg></div> Discord</div>
+              <a href="https://discord.gg/5FywUCH" data-site-link="socialDiscordUrl" data-editor-label="Discord invite URL" target="_blank" rel="noopener">
+                <div class="social-label"><div class="social-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7.5A14 14 0 0 1 10.3 6l.4.8a9.7 9.7 0 0 1 2.6 0l.4-.8A14 14 0 0 1 17 7.5c1.7 2.4 2.2 4.7 2 7-1.2.9-2.4 1.5-3.7 1.9l-.8-1.3c.7-.2 1.3-.5 1.9-.9-.2.2-.4.3-.6.4-1.2.6-2.4.9-3.8.9s-2.6-.3-3.8-.9c-.2-.1-.4-.2-.6-.4.6.4 1.2.7 1.9.9l-.8 1.3C7.4 16.2 6.2 15.6 5 14.7c-.2-2.3.3-4.6 2-7.2Z" fill="currentColor"></path><circle cx="9.8" cy="11.9" r="1.1" fill="#0d1220"></circle><circle cx="14.2" cy="11.9" r="1.1" fill="#0d1220"></circle></svg></div> <span data-site-content="socialDiscordLabel" data-editor-label="Discord social label">Discord</span></div>
               </a>
             </div>
           </section>
@@ -997,25 +1000,25 @@
         <article class="panel span-12">
           <div class="panel-header">
             <div>
-              <h2>Games In Rotation</h2>
-              <p>These are the games I&apos;m running most right now and the ones you&apos;ll usually see in marathons.</p>
+              <h2 data-site-content="gamesTitle" data-editor-label="Games heading">Games In Rotation</h2>
+              <p data-site-content="gamesDescription" data-editor-label="Games description">These are the games I&apos;m running most right now and the ones you&apos;ll usually see in marathons.</p>
             </div>
           </div>
-          <div class="games-grid">
-            <div class="game-card">
-              <h3>Garden Trills</h3>
-              <p>The game tied to my newest marathon appearance and the one I&apos;ve been most focused on lately.</p>
-              <a href="https://www.speedrun.com/garden_trills" target="_blank" rel="noopener">Open speedrun.com</a>
+          <div class="games-grid" data-site-layout="game-cards">
+            <div class="game-card" data-site-section="game-garden-trills" data-editor-section-label="Garden Trills">
+              <h3 data-site-content="gameGardenTitle" data-editor-label="Garden Trills title">Garden Trills</h3>
+              <p data-site-content="gameGardenDescription" data-editor-label="Garden Trills description">The game tied to my newest marathon appearance and the one I&apos;ve been most focused on lately.</p>
+              <a href="https://www.speedrun.com/garden_trills" data-site-link="gameGardenUrl" data-editor-label="Garden Trills link URL" target="_blank" rel="noopener" data-site-content="gameGardenLinkLabel">Open speedrun.com</a>
             </div>
-            <div class="game-card">
-              <h3>Ollie-Oop</h3>
-              <p>One that has shown up more than once in marathon history and still means a lot to me.</p>
-              <a href="https://www.speedrun.com/OllieOop" target="_blank" rel="noopener">Open speedrun.com</a>
+            <div class="game-card" data-site-section="game-ollie-oop" data-editor-section-label="Ollie-Oop">
+              <h3 data-site-content="gameOllieTitle" data-editor-label="Ollie-Oop title">Ollie-Oop</h3>
+              <p data-site-content="gameOllieDescription" data-editor-label="Ollie-Oop description">One that has shown up more than once in marathon history and still means a lot to me.</p>
+              <a href="https://www.speedrun.com/OllieOop" data-site-link="gameOllieUrl" data-editor-label="Ollie-Oop link URL" target="_blank" rel="noopener" data-site-content="gameOllieLinkLabel">Open speedrun.com</a>
             </div>
-            <div class="game-card">
-              <h3>Bad Way</h3>
-              <p>Another game in the rotation that helps round out what I like to run.</p>
-              <a href="https://www.speedrun.com/bad_way" target="_blank" rel="noopener">Open speedrun.com</a>
+            <div class="game-card" data-site-section="game-bad-way" data-editor-section-label="Bad Way">
+              <h3 data-site-content="gameBadTitle" data-editor-label="Bad Way title">Bad Way</h3>
+              <p data-site-content="gameBadDescription" data-editor-label="Bad Way description">Another game in the rotation that helps round out what I like to run.</p>
+              <a href="https://www.speedrun.com/bad_way" data-site-link="gameBadUrl" data-editor-label="Bad Way link URL" target="_blank" rel="noopener" data-site-content="gameBadLinkLabel">Open speedrun.com</a>
             </div>
           </div>
         </article>
@@ -1044,8 +1047,38 @@
     </footer>
   </div>
 
+  <aside class="site-editor-panel" id="site-editor-panel" aria-label="Homepage editor" aria-hidden="true">
+    <div class="site-editor-header">
+      <div>
+        <p class="site-editor-eyebrow">OWNER TOOLS</p>
+        <h2>Homepage editor</h2>
+      </div>
+      <button class="site-editor-icon-button" id="site-editor-close" type="button" aria-label="Close editor">×</button>
+    </div>
+    <p class="site-editor-help">Changes preview on this page as you edit. Publish to make them visible to everyone.</p>
+    <p class="site-editor-status" id="site-editor-status" role="status" aria-live="polite"></p>
+    <div class="site-editor-actions">
+      <button class="site-editor-button site-editor-button-primary" id="site-editor-publish" type="button">Publish changes</button>
+      <button class="site-editor-button" id="site-editor-preview" type="button">Preview page</button>
+      <button class="site-editor-button site-editor-button-muted" id="site-editor-discard" type="button">Discard draft</button>
+    </div>
+    <details class="site-editor-group" open>
+      <summary>Arrange sections</summary>
+      <div id="site-editor-layout"></div>
+    </details>
+    <details class="site-editor-group" open>
+      <summary>Edit text and links</summary>
+      <form id="site-editor-fields"></form>
+    </details>
+  </aside>
+  <div class="site-editor-preview-bar hidden" id="site-editor-preview-bar">
+    <span>Previewing unpublished changes</span>
+    <button class="site-editor-button" id="site-editor-return" type="button">Back to editor</button>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="js/events.js?v=20261004-r2"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/owner-auth.js"></script>
@@ -1343,5 +1376,6 @@
       document.body.appendChild(sdk);
     })();
   </script>
+  <script src="js/site-editor.js?v=20261004-r1"></script>
 </body>
 </html>

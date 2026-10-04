@@ -12,10 +12,11 @@ window.FIREBASE_CONFIG = {
   measurementId: "G-E374EH6FEH"
 };
 
-// Owner accounts that can edit VODs and access Submit Updates across devices.
+// Owner accounts that can edit VODs, access Submit Updates, and publish homepage edits.
 // Use one or both lists below.
 // Example: window.FIREBASE_OWNER_EMAILS = ["you@gmail.com"];
 // Example: window.FIREBASE_OWNER_UIDS = ["firebase-auth-uid"];
+// Homepage publishing also requires matching owner values in firestore.rules and deployed rules.
 window.FIREBASE_OWNER_EMAILS = [
   ""
 ];
