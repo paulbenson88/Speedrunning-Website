@@ -6,6 +6,7 @@
   const SECTION_SELECTOR = "[data-site-section]";
   const LAYOUT_SELECTOR = "[data-site-layout]";
   const CONTENT_MAX_LENGTH = 2000;
+  const SNAP_DISTANCE = 8;
   const GROUP_LABELS = {
     "hero-left": "Introduction and history",
     "hero-side": "About, stream, and socials",
@@ -159,19 +160,75 @@
     event.preventDefault();
     handle.setPointerCapture(event.pointerId);
 
+    const others = sectionNodes
+      .filter((node) => node !== section && node.offsetParent !== null)
+      .map((node) => ({ rect: node.getBoundingClientRect(), label: node.dataset.editorSectionLabel || node.dataset.siteSection }));
+    const parentRect = section.parentElement.getBoundingClientRect();
+    const guideV = document.createElement("div");
+    const guideH = document.createElement("div");
+    const readout = document.createElement("div");
+    guideV.className = "site-editor-guide is-vertical";
+    guideH.className = "site-editor-guide is-horizontal";
+    readout.className = "site-editor-readout";
+    document.body.append(guideV, guideH, readout);
+
+    const snap = (value, candidates) => {
+      let best = null;
+      for (const candidate of candidates) {
+        const distance = Math.abs(candidate.value - value);
+        if (distance <= SNAP_DISTANCE && (!best || distance < best.distance)) best = { ...candidate, distance };
+      }
+      return best;
+    };
+
     const onMove = (moveEvent) => {
-      const w = Math.min(100, Math.max(20, Math.round(((start.width + moveEvent.clientX - originX) / parentWidth) * 100)));
-      const h = Math.min(3000, Math.max(80, Math.round(start.height + moveEvent.clientY - originY)));
+      let width = Math.max(40, start.width + moveEvent.clientX - originX);
+      let height = Math.max(80, start.height + moveEvent.clientY - originY);
+      const notes = [];
+      guideV.style.display = "none";
+      guideH.style.display = "none";
+
+      if (!moveEvent.altKey) {
+        const widthSnap = snap(width, [
+          { value: parentRect.width, label: "full width" },
+          ...others.flatMap((o) => [
+            { value: o.rect.width, label: `width of ${o.label}` },
+            { value: o.rect.right - start.left, label: `right edge of ${o.label}`, line: o.rect.right }
+          ])
+        ]);
+        const heightSnap = snap(height, others.flatMap((o) => [
+          { value: o.rect.height, label: `height of ${o.label}` },
+          { value: o.rect.bottom - start.top, label: `bottom of ${o.label}`, line: o.rect.bottom }
+        ]));
+        if (widthSnap) {
+          width = widthSnap.value;
+          notes.push(`Matches ${widthSnap.label}`);
+          guideV.style.cssText = `display:block;left:${start.left + width}px`;
+        }
+        if (heightSnap) {
+          height = heightSnap.value;
+          notes.push(`Matches ${heightSnap.label}`);
+          guideH.style.cssText = `display:block;top:${start.top + height}px`;
+        }
+      }
+
+      const w = Math.min(100, Math.max(20, Math.round((width / parentRect.width) * 1000) / 10));
+      const h = Math.min(3000, Math.max(80, Math.round(height)));
       draftState.sizes[id] = { w, h };
       applySizes(draftState.sizes);
+      readout.textContent = [`${Math.round(width)} × ${h}px`, ...notes].join(" · ");
+      readout.style.left = `${Math.min(window.innerWidth - 260, moveEvent.clientX + 14)}px`;
+      readout.style.top = `${moveEvent.clientY + 14}px`;
       updateStatus();
     };
     const onUp = () => {
+      guideV.remove();
+      guideH.remove();
+      readout.remove();
       handle.removeEventListener("pointermove", onMove);
       handle.removeEventListener("pointerup", onUp);
       handle.removeEventListener("pointercancel", onUp);
-    };
-    handle.addEventListener("pointermove", onMove);
+    };    handle.addEventListener("pointermove", onMove);
     handle.addEventListener("pointerup", onUp);
     handle.addEventListener("pointercancel", onUp);
   }
