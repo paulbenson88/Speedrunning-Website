@@ -615,7 +615,7 @@
 
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 14px;
     }
 
@@ -978,8 +978,8 @@
         </aside>
       </section>
 
-      <section class="grid">
-        <article class="panel span-12">
+      <section class="grid" data-site-layout="page-grid">
+        <article class="panel span-12" data-site-section="games" data-editor-section-label="Games In Rotation">
           <div class="panel-header">
             <div>
               <h2 data-site-content="gamesTitle" data-editor-label="Games heading">Games In Rotation</h2>
@@ -1001,6 +1001,11 @@
               <h3 data-site-content="gameBadTitle" data-editor-label="Bad Way title">Bad Way</h3>
               <p data-site-content="gameBadDescription" data-editor-label="Bad Way description">Another game in the rotation that helps round out what I like to run.</p>
               <a href="https://www.speedrun.com/bad_way" data-site-link="gameBadUrl" data-editor-label="Bad Way link URL" target="_blank" rel="noopener" data-site-content="gameBadLinkLabel">Open speedrun.com</a>
+            </div>
+            <div class="game-card" data-site-section="game-bubsy-4d" data-editor-section-label="Bubsy 4D">
+              <h3 data-site-content="gameBubsyTitle" data-editor-label="Bubsy 4D title">Bubsy 4D</h3>
+              <p data-site-content="gameBubsyDescription" data-editor-label="Bubsy 4D description">Another game I run.</p>
+              <a href="https://www.speedrun.com/Bubsy_4D" data-site-link="gameBubsyUrl" data-editor-label="Bubsy 4D link URL" target="_blank" rel="noopener" data-site-content="gameBubsyLinkLabel">Open speedrun.com</a>
             </div>
           </div>
         </article>
@@ -1302,6 +1307,6 @@
       window.addEventListener('resize', syncTimelineHeightToSocialCard);
     })();
   </script>
-  <script src="js/site-editor.js?v=20261004-r8"></script>
+  <script src="js/site-editor.js?v=20261004-r9"></script>
 </body>
 </html>

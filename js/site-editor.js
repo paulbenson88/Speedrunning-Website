@@ -12,7 +12,7 @@
   const GROUP_LABELS = {
     "hero-left": "Introduction and history",
     "hero-side": "About, stream, and socials",
-    "game-cards": "Game cards"
+    "game-cards": "Game cards", "page-grid": "Page sections"
   };
 
   const launchButton = document.getElementById("site-editor-launch");
