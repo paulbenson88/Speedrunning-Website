@@ -227,4 +227,14 @@ DESCRIPTION:Watch at: https://twitch.tv/bthcharity
 URL:https://twitch.tv/bthcharity
 LOCATION:https://twitch.tv/bthcharity
 END:VEVENT
+BEGIN:VEVENT
+UID:run-prevent-a-thon-8-garden-trills@speedruncalendar
+DTSTAMP:20261004T192230Z
+DTSTART:20261108T020700Z
+DTEND:20261108T023200Z
+SUMMARY:Garden Trills - Prevent-A-Thon 8
+DESCRIPTION:Watch at: https://twitch.tv/preventathon
+URL:https://twitch.tv/preventathon
+LOCATION:https://twitch.tv/preventathon
+END:VEVENT
 END:VCALENDAR

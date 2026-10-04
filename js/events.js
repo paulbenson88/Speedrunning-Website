@@ -338,4 +338,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Prevent-A-Thon 8",
+    start: "2026-11-05T17:00:00Z",
+    end: "2026-11-09T06:10:00Z",
+    twitch: "preventathon",
+    url: "https://preventathon.com/schedule/",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-11-08T02:07:00Z",
+        runId: "prevent-a-thon-8-garden-trills",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
