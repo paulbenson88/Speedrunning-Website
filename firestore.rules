@@ -5,11 +5,11 @@ service cloud.firestore {
       return request.auth != null && (
         request.auth.uid in [
           // Put your owner UID(s) here.
-          ""
+          "5vM0JDJ6qiRFsJkZ7d24eNE8lNs1"
         ] ||
         request.auth.token.email in [
           // Put your owner email(s) here (lowercase).
-          ""
+          "paulbenson108@gmail.com"
         ]
       );
     }

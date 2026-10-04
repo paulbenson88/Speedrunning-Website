@@ -18,9 +18,9 @@ window.FIREBASE_CONFIG = {
 // Example: window.FIREBASE_OWNER_UIDS = ["firebase-auth-uid"];
 // Homepage publishing also requires matching owner values in firestore.rules and deployed rules.
 window.FIREBASE_OWNER_EMAILS = [
-  ""
+  "paulbenson108@gmail.com"
 ];
 
 window.FIREBASE_OWNER_UIDS = [
-  ""
+  "5vM0JDJ6qiRFsJkZ7d24eNE8lNs1"
 ];

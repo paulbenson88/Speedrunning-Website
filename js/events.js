@@ -353,7 +353,6 @@ const MARATHON_EVENTS = [
         date: "2026-11-08T02:07:00Z",
         runId: "prevent-a-thon-8-garden-trills",
         runner: "pbb8",
-        vodUrl: "https://youtu.be/KfAaxd83h_A?si=6QLV07Vh4L8cqMXW",
       },
     ],
   },
