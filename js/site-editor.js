@@ -52,6 +52,12 @@
   };
   const sectionNodes = [...document.querySelectorAll(SECTION_SELECTOR)];
 
+  const supportsPlaintextEditing = (() => {
+    const probe = document.createElement("div");
+    probe.setAttribute("contenteditable", "plaintext-only");
+    return probe.contentEditable === "plaintext-only";
+  })();
+
   let publishedState = clone(defaultState);
   let draftState = clone(defaultState);
   let ownerState = window.SpeedrunOwnerAuth.getState();
@@ -68,6 +74,18 @@
   function setEditingHighlights(enabled) {
     contentNodes.concat(linkNodes).forEach((node) => {
       node.classList.toggle("site-editor-highlight", enabled);
+    });
+    contentNodes.forEach((node) => {
+      if (!document.body.contains(node)) return;
+      if (enabled) {
+        node.setAttribute("contenteditable", supportsPlaintextEditing ? "plaintext-only" : "true");
+        node.setAttribute("spellcheck", "true");
+        node.classList.add("site-editor-inline");
+      } else {
+        node.removeAttribute("contenteditable");
+        node.removeAttribute("spellcheck");
+        node.classList.remove("site-editor-inline");
+      }
     });
   }
 
@@ -716,6 +734,22 @@
   window.addEventListener("resize", restorePanelPosition);
   restorePanelPosition();
   closeButton.addEventListener("click", closeEditor);
+
+  document.addEventListener("input", (event) => {
+    const node = event.target.closest?.("[data-site-content].site-editor-inline");
+    if (!node) return;
+    const key = node.dataset.siteContent;
+    const value = node.innerText.replace(/\n$/, "").slice(0, CONTENT_MAX_LENGTH);
+    draftState.content[key] = value;
+    node.classList.toggle("site-editor-multiline", value.includes("\n"));
+    const field = fieldsForm.querySelector(`[data-editor-key="${key}"]`);
+    if (field) field.value = value;
+    updateStatus();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest?.(".site-editor-inline") && event.target.closest("a, button")) event.preventDefault();
+  }, true);
   document.addEventListener("pointerdown", startResize);
   document.addEventListener("pointerdown", startMove);
   document.addEventListener("dblclick", resetSize);
