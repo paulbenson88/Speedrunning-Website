@@ -140,7 +140,7 @@ const MARATHON_EVENTS = [
     runs: [
       {
         game: "Ollie-Oop",
-        category: "Express Lane (9:00 PM CST start tentative)",
+        category: "Express Lane",
         console: "PC",
         estimate: "PT35M",
         date: "2026-07-15T02:00:00Z",
