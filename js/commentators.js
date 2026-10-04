@@ -149,6 +149,16 @@ const CommentatorManager = (function () {
     localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(local));
   }
 
+  /** Visitors always mirror the owner's cloud data. */
+  function replaceWithRemote(remote) {
+    if (remote.events && typeof remote.events === "object") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(remote.events));
+    }
+    if (remote.games && typeof remote.games === "object") {
+      localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(remote.games));
+    }
+  }
+
   async function ensureFirebaseReady() {
     if (firebaseReady) return true;
     if (!canUseFirebase()) return false;
@@ -167,12 +177,17 @@ const CommentatorManager = (function () {
         const snap = await firestoreDb.collection(FIRESTORE_COLLECTION).doc(FIRESTORE_DOC).get();
         if (snap.exists) {
           const remote = snap.data() || {};
-          mergeRemoteEventData(remote.events || {});
-          mergeRemoteGamePools(remote.games || {});
+          if (getOwnerState().isOwner) {
+            mergeRemoteEventData(remote.events || {});
+            mergeRemoteGamePools(remote.games || {});
+          } else {
+            replaceWithRemote(remote);
+          }
           emitUpdate();
         }
 
         firebaseReady = true;
+        if (getOwnerState().isOwner) syncToFirebaseNow();
       } catch {
         firebaseReady = false;
       }
@@ -385,6 +400,13 @@ const CommentatorManager = (function () {
 
   // Start background cloud load when Firebase is available.
   ensureFirebaseReady();
+
+  // Upload any local data as soon as an owner signs in (including later in the session).
+  if (window.SpeedrunOwnerAuth && window.SpeedrunOwnerAuth.onChange) {
+    window.SpeedrunOwnerAuth.onChange((state) => {
+      if (state && state.isOwner) syncToFirebaseNow();
+    });
+  }
 
   return {
     STATUSES,
