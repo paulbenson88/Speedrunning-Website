@@ -245,6 +245,7 @@ const CommentatorManager = (function () {
 
   /** Add a commentator to an event. */
   function add(eventName, commentatorName, gameName, options) {
+    if (!getOwnerState().isOwner) return false;
     const data = loadAll();
     const trimmedName = String(commentatorName || "").trim();
     const opts = options || {};
@@ -275,6 +276,7 @@ const CommentatorManager = (function () {
 
   /** Remove a commentator from an event. */
   function remove(eventName, commentatorName) {
+    if (!getOwnerState().isOwner) return;
     const data = loadAll();
     if (!data[eventName]) return;
     data[eventName] = data[eventName].filter(
@@ -286,6 +288,7 @@ const CommentatorManager = (function () {
 
   /** Update a commentator's status for an event. */
   function setStatus(eventName, commentatorName, newStatus) {
+    if (!getOwnerState().isOwner) return;
     if (!STATUSES[newStatus]) return;
     const data = loadAll();
     if (!data[eventName]) return;
@@ -301,6 +304,7 @@ const CommentatorManager = (function () {
 
   /** Rename a commentator for a single event (with duplicate protection). */
   function rename(eventName, oldName, newName, gameName) {
+    if (!getOwnerState().isOwner) return false;
     const trimmedNewName = String(newName || "").trim();
     if (!trimmedNewName) return false;
 

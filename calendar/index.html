@@ -49,21 +49,14 @@
     }
 
     .owner-auth-controls {
-      display: none !important;
-    }
-
-    /* Calendar keeps outreach tools available without admin lock. */
-    body:not(.admin-mode) .commentator-btn,
-    body:not(.admin-mode) .export-btn {
-      display: initial !important;
-    }
-
-    body:not(.admin-mode) #commentator-modal.hidden {
-      display: none !important;
-    }
-
-    body:not(.admin-mode) #commentator-modal:not(.hidden) {
       display: flex !important;
+    }
+
+    /* Calendar editing is owner-only (signed-in owner adds body.owner-mode). */
+    body:not(.owner-mode) .commentator-btn,
+    body:not(.owner-mode) .submission-edit-btn,
+    body:not(.owner-mode) #commentator-modal {
+      display: none !important;
     }
 
     header,
@@ -939,6 +932,7 @@
       const ownerSignOutBtn = document.getElementById('owner-signout-btn');
 
       function applyOwnerState(state) {
+        document.body.classList.toggle('owner-mode', Boolean(state && state.isOwner));
         if (ownerStatusEl) {
           if (state && state.isOwner) {
             ownerStatusEl.textContent = `Owner tools unlocked: ${state.user?.email || state.user?.uid || 'signed in'}`;

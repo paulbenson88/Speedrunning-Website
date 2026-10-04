@@ -542,6 +542,7 @@
   }
 
   function startEditFlow(submissionKey, localKeyEncoded, evIdx, runIdx) {
+    if (!(window.SpeedrunOwnerAuth && window.SpeedrunOwnerAuth.getState().isOwner)) return;
     const localKey = localKeyEncoded ? decodeURIComponent(localKeyEncoded) : "";
     const list = getLocalSubmissionsRaw();
 
