@@ -374,4 +374,31 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Mini InstaSpeedathon 2026",
+    start: "2026-11-07T10:00:00Z",
+    end: "2026-11-07T23:30:00Z",
+    twitch: "InstaSpeedathon",
+    url: "https://oengus.io/marathon/ismini26/schedule/main",
+    runs: [
+      {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT30M",
+        date: "2026-11-07T19:15:00Z",
+        runId: "ismini26-bad-way",
+        runner: "pbb8",
+      },
+      {
+        game: "Ollie-Oop",
+        category: "All Missions",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-11-07T20:00:00Z",
+        runId: "ismini26-ollie-oop",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
