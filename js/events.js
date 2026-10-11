@@ -339,6 +339,24 @@ const MARATHON_EVENTS = [
     ],
   },
   {
+    name: "Horrible Games",
+    start: "2026-10-23T17:00:00Z",
+    end: "2026-10-25T23:58:00Z",
+    twitch: "",
+    url: "https://oengus.io/marathon/HiGR/schedule/higr",
+    runs: [
+      {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT30M",
+        date: "2026-10-25T23:58:00Z",
+        runId: "higr-bad-way-any-no-torch-zip",
+        runner: "pbb8",
+      },
+    ],
+  },
+  {
     name: "Prevent-A-Thon 8",
     start: "2026-11-05T17:00:00Z",
     end: "2026-11-09T06:10:00Z",
