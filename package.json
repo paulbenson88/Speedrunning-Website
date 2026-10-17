@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "generate:ics": "node scripts/generate-ics.mjs",
+    "sync:discord": "node scripts/sync-discord-events.mjs",
     "scan:oengus": "node scripts/scan-oengus.mjs"
   },
   "dependencies": {

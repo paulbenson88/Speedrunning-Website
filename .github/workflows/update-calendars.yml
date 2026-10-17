@@ -38,6 +38,12 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: npm run generate:ics
 
+      - name: Sync Discord scheduled events
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+        run: npm run sync:discord
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet -- calendar.ics calendar-others.ics; then
