@@ -46,13 +46,14 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          if git diff --quiet -- calendar.ics calendar-others.ics; then
+          if [ -z "$(git status --porcelain -- calendar.ics calendar-others.ics discord-events.json)" ]; then
             echo "No feed changes."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add calendar.ics calendar-others.ics
+          git add calendar.ics calendar-others.ics discord-events.json
           git commit -m "chore: refresh subscribed calendar feeds"
+          git pull --rebase
           git push

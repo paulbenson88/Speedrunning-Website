@@ -5,7 +5,7 @@ const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GUILD_ID = process.env.DISCORD_GUILD_ID;
 const API = "https://discord.com/api/v10";
 const ICS_PATH = path.join(process.cwd(), "calendar.ics");
-const MARKER = "sr-sync:";
+const MAP_PATH = path.join(process.cwd(), "discord-events.json");
 const MIN_LEAD_MS = 60 * 1000;
 
 function unescapeIcs(v) {
@@ -71,10 +71,9 @@ async function discord(method, route, body) {
 function buildPayload(ev) {
   const location = (ev.location || ev.url || "https://twitch.tv/pbb8").slice(0, 100);
   const body = (ev.description || "").trim();
-  const description = `${body}\n\n[${MARKER}${ev.uid}]`.slice(-1000);
   return {
     name: ev.summary.slice(0, 100),
-    description,
+    description: body.slice(0, 1000),
     scheduled_start_time: ev.start.toISOString(),
     scheduled_end_time: ev.end.toISOString(),
     privacy_level: 2,
@@ -83,9 +82,18 @@ function buildPayload(ev) {
   };
 }
 
-function markerOf(discordEvent) {
+// Older versions tagged descriptions with [sr-sync:<uid>]; used once to migrate.
+function legacyMarkerOf(discordEvent) {
   const m = String(discordEvent.description || "").match(/\[sr-sync:([^\]]+)\]/);
   return m ? m[1] : null;
+}
+
+async function loadMap() {
+  try {
+    return JSON.parse(await fs.readFile(MAP_PATH, "utf8"));
+  } catch {
+    return {};
+  }
 }
 
 function differs(existing, payload) {
@@ -108,20 +116,23 @@ async function main() {
   const wantedByUid = new Map(wanted.map((ev) => [ev.uid, ev]));
 
   const existing = await discord("GET", `/guilds/${GUILD_ID}/scheduled-events`);
-  const managed = new Map();
+  const byId = new Map(existing.map((de) => [de.id, de]));
+  const map = await loadMap();
+
+  // Status 1 = scheduled; never touch active/completed events.
   for (const de of existing) {
-    const uid = markerOf(de);
-    // Status 1 = scheduled; never touch active/completed events.
-    if (uid && de.status === 1) managed.set(uid, de);
+    const legacyUid = legacyMarkerOf(de);
+    if (legacyUid && de.status === 1 && !map[legacyUid]) map[legacyUid] = de.id;
   }
 
   let created = 0, updated = 0, deleted = 0;
 
   for (const [uid, ev] of wantedByUid) {
     const payload = buildPayload(ev);
-    const de = managed.get(uid);
-    if (!de) {
-      await discord("POST", `/guilds/${GUILD_ID}/scheduled-events`, payload);
+    const de = byId.get(map[uid]);
+    if (!de || de.status !== 1) {
+      const made = await discord("POST", `/guilds/${GUILD_ID}/scheduled-events`, payload);
+      map[uid] = made.id;
       created++;
     } else if (differs(de, payload)) {
       await discord("PATCH", `/guilds/${GUILD_ID}/scheduled-events/${de.id}`, payload);
@@ -129,12 +140,18 @@ async function main() {
     }
   }
 
-  for (const [uid, de] of managed) {
-    if (!wantedByUid.has(uid) && new Date(de.scheduled_start_time).getTime() > now) {
+  for (const uid of Object.keys(map)) {
+    if (wantedByUid.has(uid)) continue;
+    const de = byId.get(map[uid]);
+    if (de && de.status === 1 && new Date(de.scheduled_start_time).getTime() > now) {
       await discord("DELETE", `/guilds/${GUILD_ID}/scheduled-events/${de.id}`);
       deleted++;
     }
+    delete map[uid];
   }
+
+  const sorted = Object.fromEntries(Object.entries(map).sort(([a], [b]) => a.localeCompare(b)));
+  await fs.writeFile(MAP_PATH, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
 
   console.log(`Discord sync: ${created} created, ${updated} updated, ${deleted} deleted.`);
 }
