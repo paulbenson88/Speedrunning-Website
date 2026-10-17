@@ -342,7 +342,7 @@ const MARATHON_EVENTS = [
     name: "Horrible Games",
     start: "2026-10-23T17:00:00Z",
     end: "2026-10-25T23:58:00Z",
-    twitch: "",
+    twitch: "HorribleGamesMarathon",
     url: "https://oengus.io/marathon/HiGR/schedule/higr",
     runs: [
       {
