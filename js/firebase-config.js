@@ -2,14 +2,11 @@
 // You can get it from Firebase Console -> Project settings -> General -> Your apps.
 // This file is loaded by submit.html before submit.js.
 
-const host = window.location.hostname || "localhost";
-const isLocalhost = host === "localhost" || host === "127.0.0.1";
-
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyCXHyGdfTxf7stFtIGxSVeOwpfEzB9-Txc",
-  // Firebase Auth needs the current hosting domain to be listed under Authentication > Settings > Authorized domains.
-  // Use the default Firebase app domain for local development and the custom domain (for example www.ppbb8.tv) in production.
-  authDomain: isLocalhost ? "speedrun-website-c9c0e.firebaseapp.com" : host,
+  // GitHub Pages does not host Firebase's /__/auth/handler callback, so use
+  // the Firebase project's hosted auth domain for both local and production.
+  authDomain: "speedrun-website-c9c0e.firebaseapp.com",
   projectId: "speedrun-website-c9c0e",
   storageBucket: "speedrun-website-c9c0e.firebasestorage.app",
   messagingSenderId: "529238397970",
