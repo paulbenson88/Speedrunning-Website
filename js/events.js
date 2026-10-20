@@ -437,4 +437,21 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "FAST-ATHON 2026",
+    start: "2026-11-13T14:00:00Z",
+    end: "2026-11-15T23:40:00Z",
+    url: "https://oengus.io/marathon/fast-26/schedule/fastathon26",
+    runs: [
+      {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT30M",
+        date: "2026-11-14T22:03:00Z",
+        runId: "fast-26-bad-way",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
