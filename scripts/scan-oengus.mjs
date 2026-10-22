@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { pathToFileURL } from "node:url";
 
 function extractEventSlug(scheduleUrl) {
   try {
@@ -14,7 +15,7 @@ function extractEventSlug(scheduleUrl) {
   return "";
 }
 
-async function fetchTextBestEffort(url) {
+export async function fetchTextBestEffort(url) {
   const sources = [
     url,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -67,7 +68,7 @@ async function fetchOengusMarathonTwitch(scheduleUrl) {
   }
 }
 
-function parseOengusLikeRuns(text, fallbackEvent) {
+export function parseOengusLikeRuns(text, fallbackEvent) {
   const runs = [];
   const src = String(text || "");
   const dateRegex = /"date"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/g;
@@ -173,7 +174,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err?.message || err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error(err?.message || err);
+    process.exit(1);
+  });
+}

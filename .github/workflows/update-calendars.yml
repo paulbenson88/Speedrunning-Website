@@ -7,6 +7,9 @@ on:
     paths:
       - js/events.js
       - scripts/generate-ics.mjs
+      - scripts/scan-oengus.mjs
+      - scripts/track-oengus-schedules.mjs
+      - package.json
       - .github/workflows/update-calendars.yml
   schedule:
     - cron: "*/15 * * * *"
@@ -57,3 +60,30 @@ jobs:
           git commit -m "chore: refresh subscribed calendar feeds"
           git pull --rebase
           git push
+
+  track-oengus-schedules:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: oengus-schedule-tracker
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check submitted Oengus schedules and notify Discord
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_NOTIFICATION_CHANNEL_ID: ${{ secrets.DISCORD_NOTIFICATION_CHANNEL_ID }}
+        run: npm run track:oengus

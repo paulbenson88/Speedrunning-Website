@@ -5,7 +5,8 @@
   "scripts": {
     "generate:ics": "node scripts/generate-ics.mjs",
     "sync:discord": "node scripts/sync-discord-events.mjs",
-    "scan:oengus": "node scripts/scan-oengus.mjs"
+    "scan:oengus": "node scripts/scan-oengus.mjs",
+    "track:oengus": "node scripts/track-oengus-schedules.mjs"
   },
   "dependencies": {
     "firebase-admin": "^13.4.0"
