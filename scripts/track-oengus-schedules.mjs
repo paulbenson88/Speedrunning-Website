@@ -303,17 +303,20 @@ async function deliverPendingNotifications(db) {
     .where("notificationStatus", "==", "pending")
     .get();
 
+  let sentCount = 0;
   for (const doc of pending.docs) {
     await discordRequest(`/channels/${DISCORD_NOTIFICATION_CHANNEL_ID}/messages`, {
       content: changeMessage(doc.data()),
       allowed_mentions: { parse: [] }
     });
+    sentCount += 1;
+    console.log(`Discord notification sent for schedule change ${doc.id}.`);
     await doc.ref.update({
       notificationStatus: "sent",
       notifiedAt: new Date().toISOString()
     });
-    console.log(`Sent Discord notification for schedule change ${doc.id}.`);
   }
+  console.log(`Discord notification delivery complete: ${sentCount} sent.`);
 }
 
 async function recordRunObservation(db, record, run) {
