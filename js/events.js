@@ -454,4 +454,22 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Speed Stuff at InfernaLAN 2026",
+    start: "2026-11-21T01:00:00Z",
+    end: "2026-11-22T22:53:00Z",
+    twitch: "speedstuff4charity",
+    url: "https://oengus.io/marathon/sslfwa26/schedule/main",
+    runs: [
+      {
+        game: "Garden Trills",
+        category: "Any% (Normal Mode)",
+        console: "PC",
+        estimate: "PT25M",
+        date: "2026-11-21T03:40:00Z",
+        runId: "sslfwa26-garden-trills",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];
