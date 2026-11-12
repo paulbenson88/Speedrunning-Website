@@ -1,5 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
+import vm from "node:vm";
 import { fetchTextBestEffort, parseOengusLikeRuns } from "./scan-oengus.mjs";
 
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
@@ -71,6 +73,106 @@ function normalizeSubmission(raw) {
     runnerType,
     runDateIso: new Date(runDateMs).toISOString()
   };
+}
+
+export function getBaseOengusRuns(events, nowMs = Date.now()) {
+  const runs = [];
+  for (const event of events) {
+    const scheduleUrl = canonicalOengusUrl(event.url);
+    if (!scheduleUrl) continue;
+
+    for (const run of event.runs || []) {
+      const runDateMs = Date.parse(String(run.date || ""));
+      if (!run.game || !run.category || !Number.isFinite(runDateMs) || runDateMs < nowMs) continue;
+
+      const record = normalizeSubmission({
+        scheduleUrl,
+        gameName: run.game,
+        categoryName: run.category,
+        runnerName: run.runner || "pbb8",
+        eventName: event.name,
+        runnerType: "my-run",
+        runDateUtcIso: new Date(runDateMs).toISOString()
+      });
+      if (record) runs.push(record);
+    }
+  }
+  return runs;
+}
+
+export function mergeTrackedRuns(baseRuns, submittedRuns) {
+  const byIdentity = new Map();
+  for (const run of [...baseRuns, ...submittedRuns]) {
+    byIdentity.set(run.identity, run);
+  }
+  return Array.from(byIdentity.values());
+}
+
+export function parseOengusScheduleApiResponse(payload) {
+  if (!payload || !Array.isArray(payload.lines)) {
+    throw new Error("Oengus schedule API response does not contain a lines array.");
+  }
+  return payload.lines
+    .filter((line) => line && line.game && line.category && Number.isFinite(Date.parse(line.date)))
+    .map((line) => ({
+      game: String(line.game),
+      category: String(line.category),
+      dateIso: new Date(line.date).toISOString(),
+      estimateText: String(line.estimate || "")
+    }));
+}
+
+async function loadBaseOengusRuns() {
+  const eventsPath = new URL("../js/events.js", import.meta.url);
+  const source = await fs.readFile(eventsPath, "utf8");
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(`${source}\nthis.__EVENTS__ = MARATHON_EVENTS;`, context, {
+    filename: "events.js"
+  });
+  if (!Array.isArray(context.__EVENTS__)) {
+    throw new Error("Could not read MARATHON_EVENTS from js/events.js");
+  }
+  return getBaseOengusRuns(context.__EVENTS__);
+}
+
+async function fetchScheduleRuns(scheduleUrl) {
+  const url = new URL(scheduleUrl);
+  const parts = url.pathname.split("/").filter(Boolean);
+  const marathonIndex = parts.indexOf("marathon");
+  const scheduleIndex = parts.indexOf("schedule");
+
+  if ((url.hostname === "oengus.io" || url.hostname.endsWith(".oengus.io"))
+    && marathonIndex >= 0
+    && scheduleIndex === marathonIndex + 2
+    && parts[marathonIndex + 1]
+    && parts[scheduleIndex + 1]) {
+    const apiUrl = new URL(
+      `/api/v2/marathons/${encodeURIComponent(parts[marathonIndex + 1])}/schedules/for-slug/${encodeURIComponent(parts[scheduleIndex + 1])}`,
+      url.origin
+    );
+    try {
+      const response = await fetch(apiUrl, {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "Mozilla/5.0 (compatible; SpeedrunScheduleTracker/1.0)"
+        }
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return parseOengusScheduleApiResponse(await response.json());
+    } catch (error) {
+      console.warn(`Could not read Oengus schedule API for ${scheduleUrl}: ${error.message}. Falling back to the schedule page.`);
+    }
+  }
+
+  const text = await fetchTextBestEffort(scheduleUrl);
+  const slug = parts[marathonIndex + 1] || "Oengus marathon";
+  return parseOengusLikeRuns(text, slug).map((run) => ({
+    game: run.game,
+    category: run.category,
+    dateIso: new Date(run.dateIso).toISOString(),
+    estimateText: run.estimateText
+  }));
 }
 
 export function findClosestRun(runs, gameName, categoryName, referenceDate, used = new Set()) {
@@ -223,6 +325,7 @@ async function recordRunObservation(db, record, run) {
 
     if (!previous) {
       if (!run) return "";
+      if (record.runDateIso !== run.dateIso) changeType = "time_changed";
     } else if (previous.status === "removed" && run) {
       changeType = "restored";
     } else if (previous.status !== "removed" && !run) {
@@ -253,7 +356,7 @@ async function recordRunObservation(db, record, run) {
         gameName: record.gameName,
         categoryName: record.categoryName,
         runnerName: record.runnerName,
-        oldDateIso: previous.dateIso || null,
+        oldDateIso: previous?.dateIso || record.runDateIso,
         newDateIso: run ? run.dateIso : null,
         observedAt,
         notificationStatus: "pending"
@@ -265,9 +368,7 @@ async function recordRunObservation(db, record, run) {
 }
 
 async function trackSchedule(db, scheduleUrl, records) {
-  const text = await fetchTextBestEffort(scheduleUrl);
-  const slug = new URL(scheduleUrl).pathname.split("/").filter(Boolean)[1] || "Oengus marathon";
-  const runs = parseOengusLikeRuns(text, slug);
+  const runs = await fetchScheduleRuns(scheduleUrl);
   if (!runs.length) {
     throw new Error(`No runs could be parsed from Oengus schedule: ${scheduleUrl}`);
   }
@@ -295,13 +396,9 @@ async function trackSchedule(db, scheduleUrl, records) {
       throw new Error(`Could not find submitted run "${record.gameName} - ${record.categoryName}" in ${scheduleUrl}.`);
     }
     const changeType = await recordRunObservation(db, record, match?.run || null);
-    if (changeType) {
-    if (changeType) {
-    }
+    if (changeType) console.log(`Detected ${changeType} for ${record.gameName} - ${record.categoryName} (${record.runnerName}).`);
   }
-  }
-  console.log(`Checked ${records.length} submitted run(s) in ${scheduleUrl}.`);
-  console.log(`Checked ${records.length} submitted run(s) in ${scheduleUrl}.`);
+  console.log(`Checked ${records.length} run(s) in ${scheduleUrl}.`);
 }
 
 async function main() {
@@ -311,8 +408,10 @@ async function main() {
 
   const db = await loadFirebase();
   const submittedRuns = await loadSubmittedRuns(db);
+  const baseRuns = await loadBaseOengusRuns();
+  const trackedRuns = mergeTrackedRuns(baseRuns, submittedRuns);
   const bySchedule = new Map();
-  for (const run of submittedRuns) {
+  for (const run of trackedRuns) {
     const records = bySchedule.get(run.scheduleUrl) || [];
     records.push(run);
     bySchedule.set(run.scheduleUrl, records);
@@ -323,7 +422,7 @@ async function main() {
   }
   await deliverPendingNotifications(db);
 
-  console.log(`Oengus tracking complete: ${bySchedule.size} schedule(s), ${submittedRuns.length} run(s).`);
+  console.log(`Oengus tracking complete: ${bySchedule.size} schedule(s), ${trackedRuns.length} run(s).`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
