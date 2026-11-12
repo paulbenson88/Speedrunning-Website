@@ -3,6 +3,7 @@ import test from "node:test";
 import { parseOengusLikeRuns } from "./scan-oengus.mjs";
 import {
   findClosestRun,
+  formatDate,
   getBaseOengusRuns,
   mergeTrackedRuns,
   parseOengusScheduleApiResponse
@@ -110,4 +111,11 @@ test("parses scheduled runs from the Oengus schedule API response", () => {
     dateIso: "2026-11-14T21:03:00.000Z",
     estimateText: "PT30M"
   }]);
+});
+
+test("formats Discord notification timestamps with an explicit UTC timezone", () => {
+  const formatted = formatDate("2026-11-14T22:03:00.000Z");
+  assert.match(formatted, /Nov 14, 2026/);
+  assert.match(formatted, /10:03 PM/);
+  assert.match(formatted, /UTC/);
 });

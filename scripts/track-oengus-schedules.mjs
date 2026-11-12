@@ -275,11 +275,14 @@ async function discordRequest(route, body) {
   throw new Error("Discord notification failed after repeated rate limits.");
 }
 
-function formatDate(value) {
+export function formatDate(value) {
   return new Date(value).toLocaleString("en-US", {
     timeZone: "UTC",
-    dateStyle: "medium",
-    timeStyle: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     timeZoneName: "short"
   });
 }

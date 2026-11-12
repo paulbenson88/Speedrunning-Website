@@ -448,7 +448,7 @@ const MARATHON_EVENTS = [
         category: "Any% (No Torch Zip)",
         console: "PC",
         estimate: "PT30M",
-        date: "2026-11-14T22:03:00Z",
+        date: "2026-11-14T21:03:00Z",
         runId: "fast-26-bad-way",
         runner: "pbb8",
       },
