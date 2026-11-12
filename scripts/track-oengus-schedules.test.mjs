@@ -113,9 +113,13 @@ test("parses scheduled runs from the Oengus schedule API response", () => {
   }]);
 });
 
-test("formats Discord notification timestamps with an explicit UTC timezone", () => {
+test("formats Discord notification timestamps in Central time with seasonal timezone abbreviations", () => {
   const formatted = formatDate("2026-11-14T22:03:00.000Z");
   assert.match(formatted, /Nov 14, 2026/);
-  assert.match(formatted, /10:03 PM/);
-  assert.match(formatted, /UTC/);
+  assert.match(formatted, /4:03 PM/);
+  assert.match(formatted, /CST/);
+
+  const daylightTime = formatDate("2026-07-14T22:03:00.000Z");
+  assert.match(daylightTime, /5:03 PM/);
+  assert.match(daylightTime, /CDT/);
 });

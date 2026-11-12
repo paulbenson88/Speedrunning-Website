@@ -277,7 +277,7 @@ async function discordRequest(route, body) {
 
 export function formatDate(value) {
   return new Date(value).toLocaleString("en-US", {
-    timeZone: "UTC",
+    timeZone: "America/Chicago",
     month: "short",
     day: "numeric",
     year: "numeric",
